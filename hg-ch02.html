@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Flashcards</title>
+<style>
+:root{
+  --bg:#f6f5f1;--card:#fff;--ink:#1b1b1d;--muted:#6b6b70;--line:#e6e3dc;--soft:#efece5;
+  --accent:#b8332a;--ok:#2f8f5b;--warn:#c98612;--bad:#c23b2e;
+  --r:16px;--sh:0 1px 2px rgba(0,0,0,.04),0 12px 32px -20px rgba(0,0,0,.28);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121214;--card:#1c1c1f;--ink:#ececef;--muted:#9a9aa2;--line:#2c2c31;--soft:#25252a;--sh:0 1px 2px rgba(0,0,0,.5)}}
+:root[data-theme="dark"]{--bg:#121214;--card:#1c1c1f;--ink:#ececef;--muted:#9a9aa2;--line:#2c2c31;--soft:#25252a;--sh:0 1px 2px rgba(0,0,0,.5)}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%}
+button{font:inherit;color:inherit;-webkit-tap-highlight-color:transparent}
+a{color:inherit}
+header{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.bar{max-width:720px;margin:0 auto;padding:10px 18px;display:flex;align-items:center;gap:10px}
+.brand{display:flex;align-items:center;gap:8px;font-weight:700;letter-spacing:-.01em;text-decoration:none;min-width:0}
+.brand i{width:10px;height:10px;border-radius:50%;background:var(--accent);flex:0 0 10px}
+.brand span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sp{flex:1}
+.ib{border:1px solid var(--line);background:var(--card);border-radius:10px;height:34px;min-width:34px;padding:0 10px;cursor:pointer;font-size:14px}
+main{max-width:720px;margin:0 auto;padding:22px 18px 28px}
+h1{font-size:25px;line-height:1.2;margin:0 0 6px;letter-spacing:-.02em}
+h2{font-size:15px;margin:28px 0 10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.sub{color:var(--muted);margin:0 0 18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh)}
+.pad{padding:16px 18px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line);background:var(--card);padding:12px 16px;border-radius:12px;cursor:pointer;font-weight:600;text-decoration:none}
+.btn:hover{border-color:var(--ink)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.wide{width:100%}
+.btn:disabled{opacity:.4;cursor:default}
+.btn.sm{padding:7px 12px;font-size:14px;border-radius:10px}
+.stack>*+*{margin-top:10px}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}
+.kpi{padding:12px 14px}.kpi b{display:block;font-size:24px;letter-spacing:-.02em;line-height:1.1}.kpi span{font-size:13px;color:var(--muted)}
+.how{font-size:14.5px;color:var(--muted);padding-left:18px;margin:0}.how li+li{margin-top:4px}
+.prog{height:6px;background:var(--soft);border-radius:99px;overflow:hidden}.prog i{display:block;height:100%;border-radius:99px;background:var(--ok)}
+.deck{display:flex;align-items:center;gap:12px;padding:13px 16px;border-top:1px solid var(--line);text-decoration:none}
+.deck:first-child{border-top:0}
+.deck:hover{background:var(--soft)}
+.deck .t{flex:1;min-width:0}
+.deck .t b{display:block;font-weight:600}
+.deck .t small{color:var(--muted);font-size:13px}
+.deck .prog{width:70px;flex:0 0 70px}
+.deck .go{color:var(--muted);font-size:18px}
+.deck.grp{background:var(--soft);font-size:13px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:9px 16px}
+.deck.grp:hover{background:var(--soft)}
+.deck.sub1{padding-left:30px}
+.top{display:flex;align-items:center;gap:10px;margin-bottom:10px;color:var(--muted);font-size:14px}
+.flash{padding:22px 20px;min-height:320px;display:flex;flex-direction:column;gap:16px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.chip{font-size:12px;font-weight:600;padding:3px 9px;border-radius:99px;background:var(--soft);color:var(--muted)}
+.chip.piege{background:color-mix(in srgb,var(--bad) 14%,transparent);color:var(--bad)}
+.chip.synthese{background:var(--ink);color:var(--bg)}
+.q{font-size:23px;line-height:1.35;font-weight:650;letter-spacing:-.01em}
+.r{font-size:18px;line-height:1.55;padding-top:16px;border-top:1px dashed var(--line)}
+.hint{font-size:14px;color:var(--muted)}
+.flash.synth{border:2px solid var(--ink)}
+.grade{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.grade button{padding:14px 6px;border-radius:12px;border:1px solid var(--line);background:var(--card);cursor:pointer;font-weight:700;font-size:16px}
+.grade button small{display:block;font-weight:500;color:var(--muted);font-size:12px;margin-top:2px}
+.grade .g1{color:var(--bad)}.grade .g2{color:var(--warn)}.grade .g3{color:var(--ok)}
+.unsure{display:inline-block;background:var(--warn);color:#fff;font-size:11px;font-weight:700;padding:0 6px;border-radius:6px;vertical-align:2px}
+.gwrap{overflow-x:auto}
+table.gx{width:100%;border-collapse:collapse;font-size:15px;min-width:380px}
+table.gx th{font-size:12px;color:var(--muted);padding:6px;border-bottom:1px solid var(--line);text-align:center}
+table.gx th:first-child{text-align:left}
+table.gx td{padding:9px 6px;border-bottom:1px solid var(--line)}
+table.gx td.c{text-align:center;width:90px}
+table.gx tr.ok td{background:color-mix(in srgb,var(--ok) 12%,transparent)}
+table.gx tr.ko td{background:color-mix(in srgb,var(--bad) 12%,transparent)}
+table.gx input{width:20px;height:20px;accent-color:var(--accent)}
+kbd{font:11px ui-monospace,Menlo,monospace;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 5px;color:var(--muted)}
+.res{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 16px}
+.muted{color:var(--muted)}.small{font-size:13.5px}
+footer{max-width:720px;margin:0 auto;padding:6px 18px 40px;color:var(--muted);font-size:13px}
+footer button{background:none;border:0;padding:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px}
+@media (max-width:520px){.q{font-size:21px}.kpi b{font-size:21px}.deck .prog{display:none}h1{font-size:22px}}
+@media (hover:none){kbd{display:none}}
+</style>
+</head>
+<body>
+<header><div class="bar">
+  <a class="brand" href="#"><i></i><span id="brand">Flashcards</span></a>
+  <span class="sp"></span>
+  <button class="ib" id="theme" title="Clair / sombre" aria-label="Changer de thème">◐</button>
+</div></header>
+<main id="view"></main>
+<footer id="foot"></footer>
+<script>
+(function(){
+'use strict';
+const CH={"id":"hg-ch02","matiere":"HISTOIRE-GÉO","numero":2,"titre":"Les régimes totalitaires","couleur":"#0f7285","types":{"def":"Notion","meca":"Mécanisme","chiffre":"Repère / chiffre","auteur":"Acteur / document","piege":"Piège"},"plan":[{"id":"intro","court":"Problématique + repères","titre":"Problématique et repères chronologiques essentiels"},{"id":"I","court":"I. URSS","titre":"I. Le régime soviétique : tout pour le peuple, un régime communiste ?","enfants":[{"id":"I1","court":"1. Idéologie","titre":"1. L'idéologie : Staline et les classes sociales"},{"id":"I2","court":"2. Encadrement","titre":"2. L'encadrement de la société"},{"id":"I3","court":"3. Terreur stalinienne","titre":"3. La terreur stalinienne"}]},{"id":"II","court":"II. Italie fasciste","titre":"II. L'Italie fasciste [titre exact à confirmer]","enfants":[{"id":"II1","court":"1. Idéologie","titre":"1. L'idéologie : Mussolini et la nation italienne"},{"id":"II2","court":"2. Encadrement","titre":"2. L'encadrement de la population"}]},{"id":"III","court":"III. Nazisme","titre":"III. Le nazisme allemand : tout pour la race ?","enfants":[{"id":"III1","court":"1. Idéologie","titre":"1. L'idéologie : Hitler et la race aryenne"},{"id":"III2","court":"2. Mise au pas","titre":"2. La mise au pas de l'Allemagne"},{"id":"III3","court":"3. Terreur nazie","titre":"3. La terreur nazie"}]},{"id":"IV","court":"IV. Marche à la guerre","titre":"IV. La marche à la guerre","enfants":[{"id":"IV1","court":"1. Premières agressions","titre":"1. Les premières agressions allemandes et italiennes"},{"id":"IV2","court":"2. Faiblesse de la SDN","titre":"2. La faiblesse de la Société des Nations"},{"id":"IV3","court":"3. Annexions 1936-39","titre":"3. Annexions totalitaires et alliances en Europe (1936-1939)"}]},{"id":"ccl","court":"Conclusion","titre":"Conclusion — Du pacte germano-soviétique à la guerre"},{"id":"synth","court":"Synthèse comparative","titre":"Le tableau comparatif : URSS · Italie · Allemagne"}],"cartes":[{"id":"x01","s":"intro","type":"def","t":"La problématique","q":"La problématique du chapitre, mot pour mot ?","r":"« Quelles sont les **caractéristiques** des régimes totalitaires dans l'**entre-deux-guerres** et comment les régimes totalitaires **amènent-ils à la guerre** ? » — deux questions, donc deux moitiés de devoir."},{"id":"x02","s":"intro","type":"chiffre","t":"1924 (URSS)","q":"1924, en URSS ?","r":"**Mort de Lénine.** Staline prend le contrôle petit à petit."},{"id":"x03","s":"intro","type":"chiffre","t":"1933 (URSS)","q":"1933, en URSS ?","r":"La **Grande famine**."},{"id":"x04","s":"intro","type":"chiffre","t":"1937-38 (URSS)","q":"1937-1938, en URSS ?","r":"La **Grande Terreur**."},{"id":"x05","s":"intro","type":"chiffre","t":"1922 (Italie)","q":"1922, en Italie ?","r":"**Mussolini président du Conseil.**"},{"id":"x06","s":"intro","type":"chiffre","t":"1938 (Italie)","q":"1938, en Italie ?","r":"**Mimétisme de l'Allemagne nazie** : début de l'**antisémitisme** d'État."},{"id":"x07","s":"intro","type":"chiffre","t":"1939 (Italie)","q":"1939, pour l'Italie ?","r":"L'Italie **entre en Seconde Guerre mondiale aux côtés de l'Allemagne nazie**."},{"id":"x08","s":"intro","type":"chiffre","t":"1934 (Allemagne)","q":"1934, en Allemagne ?","r":"**Mort d'Hindenburg.** Hitler **cumule les pleins pouvoirs** — présidence **+** chancellerie — et prend le titre de **Führer**."},{"id":"x09","s":"intro","type":"chiffre","t":"1935 (Allemagne)","q":"1935, en Allemagne ?","r":"Les **lois de Nuremberg** : **exclusion juridique** des Juifs de la communauté allemande."},{"id":"x10","s":"intro","type":"chiffre","t":"9-10 nov. 1938","q":"9-10 novembre 1938 ?","r":"La **Nuit de Cristal** — un **pogrom organisé par l'État**, massacre des Juifs."},{"id":"x11","s":"intro","type":"piege","t":"Les 3 blocs de repères","q":"Les repères se rangent en trois blocs : lesquels, et combien de dates chacun ?","r":"**URSS** (1924, 1933, 1937-38) · **Italie** (1922, 1938, 1939) · **Allemagne** (1934, 1935, 9-10 nov. 1938). Neuf dates : c'est le minimum exigible."},{"id":"u01","s":"I1","type":"def","t":"Idéologie soviétique","q":"Sur quelle idéologie le régime soviétique s'appuie-t-il ?","r":"L'idéologie **marxiste-léniniste**."},{"id":"u02","s":"I1","type":"def","t":"L'objectif du régime","q":"Quel est l'objectif affiché du régime soviétique ?","r":"Fonder une **société égalitaire** (« communiste ») **reposant sur le monde ouvrier** — au bout du compte, une société **sans classe sociale**."},{"id":"u03","s":"I1","type":"def","t":"Les ennemis intérieurs","q":"Qui Staline entend-il éliminer, et sous quel nom ?","r":"Les **ennemis intérieurs** qui empêchent le développement de la société nouvelle : les « **bourgeois capitalistes** » et les « **koulaks** »."},{"id":"u04","s":"I1","type":"def","t":"Koulaks","q":"Que sont les koulaks ?","r":"Les **paysans aisés** — les paysans propriétaires de leurs terres."},{"id":"u05","s":"I2","type":"def","t":"Vojd","q":"Comment la propagande présente-t-elle Staline ? Deux formules.","r":"Le **Vojd** (« le guide ») et le « **petit père des peuples** » : un chef **charismatique**."},{"id":"u06","s":"I2","type":"def","t":"Culte de la personnalité","q":"Quel nom porte ce procédé de propagande autour du chef ?","r":"Le **culte de la personnalité**."},{"id":"u07","s":"I2","type":"def","t":"PCUS","q":"Quel est le parti unique en URSS ?","r":"Le **PCUS** — **Parti communiste d'Union soviétique**. Staline en est le chef."},{"id":"u08","s":"I2","type":"def","t":"Komsomols","q":"Comment le parti embrigade-t-il les jeunes en URSS ?","r":"Par les organisations de jeunesse : les **komsomols**."},{"id":"u09","s":"I2","type":"chiffre","t":"1929 : collectivisation","q":"À partir de quelle année l'État contrôle-t-il l'économie, et par quelle mesure ?","r":"À partir de **1929** : la **collectivisation des terres**. Les paysans renoncent à la **propriété** de leurs terres."},{"id":"u10","s":"I2","type":"def","t":"Kolkhozes","q":"Où les paysans doivent-ils désormais travailler ?","r":"Dans des **fermes collectives** : les « **kolkhozes** »."},{"id":"u11","s":"I3","type":"chiffre","t":"1,8 million de déportés","q":"Combien de paysans refusant la collectivisation sont déportés, et où ?","r":"**1,8 million** de paysans dénoncés comme « koulaks », déportés dans les **camps de concentration du Goulag**."},{"id":"u12","s":"I3","type":"def","t":"Goulag","q":"Qu'est-ce que le Goulag ?","r":"Le système des **camps de concentration** soviétiques où sont déportés les « koulaks » et les opposants."},{"id":"u13","s":"I3","type":"meca","t":"Pourquoi la famine","q":"Quel est l'enchaînement qui mène à la famine ?","r":"Les paysans **refusent** la collectivisation → la production agricole, **désorganisée, s'écroule** → **famine**."},{"id":"u14","s":"I3","type":"chiffre","t":"La famine de 1933","q":"La famine de 1933 : combien de morts, et où surtout ?","r":"**Plus de 8 millions de morts** en **1933**, notamment en **Ukraine**."},{"id":"u15","s":"I3","type":"meca","t":"Moscou épargnée","q":"Pourquoi les grandes villes échappent-elles à la famine ?","r":"Grâce aux **réquisitions dans les campagnes**. Moscou mange, les villages meurent : la situation y est « **épouvantable** »."},{"id":"u16","s":"I3","type":"auteur","t":"Tintin au pays des Soviets","q":"Quel document le cours cite-t-il sur les réquisitions ?","r":"Un extrait de « **Tintin au pays des Soviets** » (Hergé)."},{"id":"u17","s":"I3","type":"def","t":"NKVD","q":"Quelle est la police politique soviétique, et que fait-elle ?","r":"Le **NKVD** : il **espionne la population** et **persécute les opposants** à Staline."},{"id":"u18","s":"I3","type":"chiffre","t":"La Grande Terreur","q":"La « grande terreur » : quand, et combien de morts ?","r":"En **1937 et 1938** — **750 000 morts en quelques mois**."},{"id":"u19","s":"I3","type":"meca","t":"Qui est visé par la Terreur","q":"Qui est arrêté pendant la grande terreur, et que leur arrive-t-il ?","r":"Des **militaires**, des **responsables politiques**, des « **koulaks** », des **scientifiques** : **arrêtés, torturés, déportés ou exécutés**."},{"id":"u20","s":"I3","type":"auteur","t":"Point de passage URSS","q":"Sur quelles pages se trouve le point de passage de la partie I ?","r":"**Pages 64 et 65** du manuel (la terreur stalinienne)."},{"id":"t01","s":"II1","type":"chiffre","t":"Lois fascistissimes","q":"Quelles lois instaurent l'État totalitaire en Italie, et quand ?","r":"Les lois « **fascistissimes** » de **1925-1926**."},{"id":"t02","s":"II1","type":"chiffre","t":"Mussolini, 1922","q":"Quelle fonction Mussolini occupe-t-il, et depuis quand ?","r":"**Président du Conseil** de la **monarchie constitutionnelle** italienne **depuis 1922**."},{"id":"t03","s":"II1","type":"def","t":"Duce","q":"Quel est le titre de Mussolini et ce qu'il signifie ?","r":"Le **Duce** — « **guide** »."},{"id":"t04","s":"II1","type":"meca","t":"Ce que les lois lui donnent","q":"Les cinq pouvoirs que les lois fascistissimes donnent à Mussolini ?","r":"① Il possède **seul le pouvoir exécutif** ② il **abolit le droit de grève** ③ il fait du **PNF le parti unique** ④ il **contrôle la presse** ⑤ il contrôle le **pouvoir législatif**."},{"id":"t05","s":"II1","type":"def","t":"PNF","q":"Quel est le parti unique en Italie ?","r":"Le **PNF** — **Parti national fasciste**."},{"id":"t06","s":"II1","type":"def","t":"OVRA","q":"Quelle est la police politique italienne, et pour quoi faire ?","r":"L'**OVRA**, créée pour **réprimer les opposants**."},{"id":"t07","s":"II1","type":"chiffre","t":"1931 : Code pénal","q":"Que se passe-t-il en 1931 en Italie ?","r":"Le **Code pénal est réformé** pour **faciliter la répression**."},{"id":"t08","s":"II1","type":"def","t":"Totalitaire de droite","q":"Sur quoi repose le régime totalitaire italien ?","r":"C'est un **régime totalitaire de droite**, fondé sur la **supériorité supposée de la nation italienne** (**nationalisme**)."},{"id":"t09","s":"II1","type":"def","t":"L'Homme nouveau","q":"Quelle figure le fascisme veut-il créer ?","r":"Un « **Homme nouveau** » — « **l'Italien nouveau** » — en s'appuyant sur le **sentiment national italien**."},{"id":"t10","s":"II2","type":"def","t":"État policier","q":"Comment Mussolini lutte-t-il contre ses opposants ?","r":"En instaurant un **État policier**."},{"id":"t11","s":"II2","type":"def","t":"Le surhomme","q":"Comment le culte de la personnalité présente-t-il Mussolini ?","r":"Comme un **surhomme**. Il organise aussi de **grands rassemblements de propagande**."},{"id":"t12","s":"II2","type":"def","t":"OND","q":"Comment le régime encadre-t-il les loisirs des Italiens ?","r":"Par l'**Opera Nazionale Dopolavoro (OND)**."},{"id":"t13","s":"II2","type":"def","t":"Gioventù del Littorio","q":"Quelle est l'organisation de jeunesse italienne, et de quel âge à quel âge ?","r":"La **Gioventù italiana del Littorio** — **Jeunesse italienne du Licteur** — de **6 à 21 ans**."},{"id":"t14","s":"II2","type":"chiffre","t":"7,8 millions en 1939","q":"Combien d'Italiens la Gioventù réunit-elle, et en quelle année ?","r":"**7,8 millions d'Italiens en 1939**."},{"id":"t15","s":"II2","type":"auteur","t":"Croire, obéir, combattre","q":"La devise de la jeunesse fasciste italienne ?","r":"« **Croire, obéir, combattre.** »"},{"id":"t16","s":"II2","type":"def","t":"Batailles économiques","q":"Comment Mussolini répond-il à la crise de 1929 ?","r":"Par des « **batailles économiques** » et de **grands travaux** (chantiers **ferroviaires** et **autoroutiers**)."},{"id":"t17","s":"II2","type":"chiffre","t":"La guerre du blé","q":"Quelle est la « bataille économique » emblématique, et son résultat chiffré ?","r":"La « **guerre du blé** » : **hausse de 50 % de la production de grains**."},{"id":"t18","s":"II2","type":"meca","t":"Société peu totalisable","q":"Pourquoi les historiens parlent-ils d'une « société peu totalisable » en Italie ?","r":"À cause des **contrepoids** culturels et sociaux : l'**Église**, le **roi**, et la **tradition régionaliste** italienne — peu propices à un **réel État fort** à l'échelle de toute l'Italie."},{"id":"t19","s":"II2","type":"meca","t":"Dissimuler les échecs","q":"Comment le fascisme masque-t-il ses échecs ?","r":"En proposant de **nouveaux combats et adversaires** aux Italiens : **mesures d'exclusion contre les Juifs (1938)** et **suppression de la Chambre des députés le 2 mars 1939**."},{"id":"n01","s":"III1","type":"meca","t":"Weimar et la crise","q":"Quelle est la situation de l'Allemagne avant Hitler, et qui Hitler accuse-t-il ?","r":"La **République de Weimar** est **durement touchée par la crise de 1929**. Hitler accuse le **traité de Versailles**, les **Juifs** et la **République**."},{"id":"n02","s":"III1","type":"def","t":"NSDAP","q":"De quel parti Hitler est-il le dirigeant ?","r":"Le **NSDAP** — le **parti nazi**."},{"id":"n03","s":"III1","type":"def","t":"La race aryenne","q":"Que dit Hitler des Allemands et de leur « race » ?","r":"Les Allemands appartiennent à la « race » **supérieure des Aryens**, **affaiblie par des siècles de mélanges avec les Juifs**."},{"id":"n04","s":"III1","type":"def","t":"Les 4 adjectifs de l'idéologie","q":"Par quelle idéologie Hitler veut-il « régénérer » l'Allemagne ? (4 adjectifs)","r":"Une idéologie **raciste**, **antisémite**, **guerrière** et **eugéniste**. Les quatre mots comptent."},{"id":"n05","s":"III1","type":"def","t":"Espace vital","q":"Que doivent conquérir les Aryens ?","r":"Leur « **espace vital** »."},{"id":"n06","s":"III1","type":"def","t":"Führer","q":"De quoi les Aryens ont-ils besoin pour atteindre cet objectif ?","r":"D'un **chef** — un **Führer** — et de se **préparer à la guerre**."},{"id":"n07","s":"III1","type":"chiffre","t":"1932 : premier parti","q":"Que devient le NSDAP après les élections législatives de 1932 ?","r":"Le **premier parti au Reichstag**."},{"id":"n08","s":"III1","type":"chiffre","t":"30 janvier 1933","q":"Le 30 janvier 1933 ? Qui nomme qui ?","r":"Le président **Hindenburg** nomme **Hitler chancelier**."},{"id":"n09","s":"III2","type":"meca","t":"Les 3 premiers gestes","q":"Les trois premières mesures d'Hitler au pouvoir ?","r":"① Il **limite les libertés individuelles** ② il se fait octroyer les **pleins pouvoirs par le Parlement** ③ il fait du **NSDAP le parti unique**."},{"id":"n10","s":"III2","type":"chiffre","t":"Nuit des Longs Couteaux","q":"La nuit des Longs Couteaux : quand, contre qui, combien de morts ?","r":"Les **29 et 30 juin 1934**. Hitler élimine ses opposants **au sein du NSDAP** : **85 SA assassinés**."},{"id":"n11","s":"III2","type":"chiffre","t":"Août 1934 : Reichsführer","q":"Que se passe-t-il à la mort d'Hindenburg ?","r":"**Août 1934** : Hitler se fait proclamer **Reichsführer**. Il est dès lors le **seul dirigeant de l'Allemagne**."},{"id":"n12","s":"III2","type":"def","t":"Jeunesses hitlériennes","q":"Comment la société allemande est-elle embrigadée ?","r":"Par les **Jeunesses hitlériennes**, encadrée par une **propagande omniprésente**."},{"id":"n13","s":"III2","type":"def","t":"Gestapo","q":"Quelle est la police politique nazie, et depuis quand ?","r":"La **Gestapo**, **dès 1933**."},{"id":"n14","s":"III2","type":"meca","t":"Sortir du chômage","q":"Comment le régime nazi relance-t-il l'économie ?","r":"Par les **commandes militaires de l'État** et les **recrutements** dans la **police**, l'**armée** et l'**industrie**."},{"id":"n15","s":"III2","type":"chiffre","t":"6 millions → 400 000","q":"Le chômage allemand : chiffres de 1932 et de 1938 ?","r":"**6 millions de chômeurs en 1932** → **400 000 en 1938**."},{"id":"n16","s":"III3","type":"chiffre","t":"Emprisonnés et exilés","q":"Combien de personnes persécutées de 1933 à 1939 ?","r":"**1 million d'individus emprisonnés** et **500 000 exilés** de **1933 à 1939**."},{"id":"n17","s":"III3","type":"chiffre","t":"Dachau, mars 1933","q":"Le premier camp de concentration nazi : où et quand ?","r":"À **Dachau**, en **mars 1933**."},{"id":"n18","s":"III3","type":"def","t":"Autodafés","q":"Que sont les autodafés, et qui les organise ?","r":"Des **incendies de livres**, **organisés par l'État**."},{"id":"n19","s":"III3","type":"chiffre","t":"Avril 1933 : le boycott","q":"Première mesure antisémite du régime nazi ?","r":"Le **boycott des magasins juifs dès avril 1933**. Les Juifs servent de **boucs émissaires**."},{"id":"n20","s":"III3","type":"chiffre","t":"Lois de Nuremberg (contenu)","q":"Que font précisément les lois de Nuremberg de 1935 ?","r":"Elles **privent les Juifs de la nationalité allemande** et **interdisent tout mariage entre Juifs et citoyens allemands**."},{"id":"n21","s":"III3","type":"chiffre","t":"1938 : les emplois","q":"Quelle mesure antisémite intervient en 1938 ?","r":"De **nombreux emplois sont interdits** aux Juifs à partir de **1938**."},{"id":"n22","s":"III3","type":"def","t":"Pogrom","q":"Comment le cours qualifie-t-il la Nuit de Cristal ?","r":"Un **pogrom organisé par l'État**, **du 9 au 10 novembre 1938**."},{"id":"n23","s":"III3","type":"meca","t":"La résistance passive","q":"Le totalitarisme nazi est-il total ? Que nuance le cours ?","r":"Non : des **formes de résistance passive** existent, des Allemands **conservent des idéaux politiques contraires au nazisme**."},{"id":"n24","s":"III3","type":"auteur","t":"Point de passage nazisme","q":"Sur quelles pages se trouve le point de passage de la partie III ?","r":"**Pages 66 et 67** du manuel (la terreur nazie)."},{"id":"g01","s":"IV1","type":"meca","t":"Les 3 coups de force","q":"Hitler dénonce le traité de Versailles : quels sont ses trois coups de force ?","r":"① **Programme de réarmement** (rétablissement du **service militaire obligatoire**) ② **remilitarisation de la Rhénanie (1936)** ③ **alliances avec l'Italie et le Japon**."},{"id":"g02","s":"IV1","type":"def","t":"Pourquoi Versailles","q":"Pourquoi Hitler dénonce-t-il le traité de Versailles ?","r":"Parce qu'il **limite la puissance de l'Allemagne**."},{"id":"g03","s":"IV1","type":"chiffre","t":"Rhénanie 1936","q":"Quel coup de force en 1936 ?","r":"La **remilitarisation de la Rhénanie**."},{"id":"g04","s":"IV1","type":"chiffre","t":"Éthiopie 1935","q":"Que fait Mussolini en 1935, et pourquoi l'Éthiopie ?","r":"Il lance l'Italie à la **conquête de l'Éthiopie**, « **dernier pays indépendant à l'est de l'Afrique** », en proclamant le **rétablissement de l'Empire romain**."},{"id":"g05","s":"IV1","type":"meca","t":"Crimes de guerre en Éthiopie","q":"Comment la conquête de l'Éthiopie se déroule-t-elle ?","r":"Elle **s'accompagne de crimes de guerre** : **massacre de civils**, **utilisation de gaz asphyxiants**."},{"id":"g06","s":"IV2","type":"def","t":"La SDN","q":"La Société des Nations : créée par quoi, ancêtre de quoi, chargée de quoi ?","r":"Créée par le **traité de Versailles**, **ancêtre de l'ONU**, **chargée d'empêcher le retour de la guerre** en Europe et dans le monde."},{"id":"g07","s":"IV2","type":"chiffre","t":"1933 : les départs","q":"Qui quitte la SDN en 1933 ?","r":"**Hitler retire l'Allemagne** de la SDN, et le **Japon se retire également** — tous deux en **1933**."},{"id":"g08","s":"IV2","type":"chiffre","t":"1937 : l'Italie","q":"Quand l'Italie quitte-t-elle la SDN, et pourquoi ?","r":"En **1937**, après s'être **rapprochée de l'Allemagne nazie**."},{"id":"g09","s":"IV2","type":"meca","t":"L'échec de la SDN","q":"Que fait la SDN face à l'invasion de l'Éthiopie ?","r":"Elle la **condamne mais en vain**. La SDN est **humiliée par Hitler et ses alliés** : c'est le mot du cours."},{"id":"g10","s":"IV3","type":"chiffre","t":"Guerre d'Espagne","q":"La guerre civile d'Espagne : quelles dates, et qui s'affronte ?","r":"**1936-1939**. Une partie de l'armée commandée par le **général Franco** contre le **gouvernement légal de la République espagnole**."},{"id":"g11","s":"IV3","type":"meca","t":"Qui soutient qui en Espagne","q":"Qui soutient les franquistes ? Qui soutient les républicains ?","r":"Les **franquistes** : l'**Italie fasciste** et l'**Allemagne nazie** (matériel militaire et renforts). Les **républicains** : l'**URSS**, où les **communistes** sont très influents."},{"id":"g12","s":"IV3","type":"chiffre","t":"Bilan de la guerre d'Espagne","q":"Qui gagne, quand, et combien de morts ?","r":"**Franco est vainqueur en 1939**. La guerre a causé la mort de **plus de 600 000 personnes**."},{"id":"g13","s":"IV3","type":"auteur","t":"Point de passage Espagne","q":"Sur quelles pages se trouve le point de passage sur la guerre d'Espagne ?","r":"**Pages 74 et 75** du manuel."},{"id":"g14","s":"IV3","type":"def","t":"Le projet d'Hitler","q":"Quel est le projet d'Hitler en Europe à partir de 1938 ?","r":"**Réunir toutes les populations germanophones d'Europe.**"},{"id":"g15","s":"IV3","type":"chiffre","t":"Anschluss 1938","q":"Qu'est-ce que l'Anschluss, et quand ?","r":"L'**annexion de l'Autriche** en **1938**."},{"id":"g16","s":"IV3","type":"chiffre","t":"Accords de Munich","q":"Que Hitler obtient-il aux accords de Munich, et avec qui ?","r":"Le **démantèlement de la Tchécoslovaquie**, avec la **France** et la **Grande-Bretagne** (**1938**)."},{"id":"g17","s":"IV3","type":"meca","t":"Sudètes puis Bohême-Moravie","q":"Quelles régions l'Allemagne prend-elle, et avec quel résultat ?","r":"Elle **annexe les Sudètes** puis **occupe la Bohême-Moravie** : **toute la République tchèque actuelle est sous contrôle allemand**."},{"id":"g18","s":"IV3","type":"meca","t":"La responsabilité des démocraties","q":"Comment le cours explique-t-il que Hitler ait pu aller si vite ?","r":"Par le **pacifisme**, la **naïveté**, voire la **complicité** d'une partie des dirigeants **britanniques et français** : ils lui ont permis de **ruiner le traité de Versailles en quelques années** et de préparer la **revanche** de l'Allemagne sur sa **défaite de 1918**."},{"id":"c01","s":"ccl","type":"chiffre","t":"Pacte germano-soviétique","q":"Quelle alliance Hitler conclut-il, avec qui et quand ?","r":"Le **pacte de non-agression germano-soviétique** avec l'**URSS**, en **août 1939**. Une alliance **temporaire**."},{"id":"c02","s":"ccl","type":"meca","t":"Pourquoi le pacte","q":"Quel danger le pacte écarte-t-il pour Hitler ?","r":"Celui d'une **guerre sur 2 fronts**."},{"id":"c03","s":"ccl","type":"chiffre","t":"1er septembre 1939","q":"Le 1er septembre 1939 ? Et la réaction ?","r":"**Hitler envahit la Pologne.** Cette fois, la **France et la Grande-Bretagne** sont **contraintes de réagir** et **déclarent la guerre à l'Allemagne**."},{"id":"c04","s":"ccl","type":"meca","t":"La phrase de conclusion","q":"Les deux idées de la conclusion, mot pour mot ?","r":"① Les régimes totalitaires, dont les **racines plongent dans la 1ère Guerre mondiale**, sont **responsables du déclenchement** d'une guerre **encore plus dévastatrice que la précédente** ② les **démocraties française et britannique ont été incapables de stopper la marche à la guerre**."},{"id":"s01","s":"synth","type":"chiffre","t":"Les 3 dates de naissance","q":"Année de naissance des trois régimes ?","r":"**URSS 1922** · **Italie 1925** · **Allemagne 30 janvier 1933**."},{"id":"s02","s":"synth","type":"def","t":"Les 3 types de régime","q":"Nom du type de régime dans les trois pays ?","r":"**Communiste stalinien** · **Fascisme** · **Nazisme**."},{"id":"s03","s":"synth","type":"def","t":"Les 3 dictateurs","q":"Les trois dictateurs, nom complet ?","r":"**Staline** · **Benito Mussolini** · **Adolf Hitler**."},{"id":"s04","s":"synth","type":"def","t":"Les 3 titres","q":"Titre ou surnom de chaque dictateur ?","r":"**Vojd** (« le guide ») · **Duce** (« guide ») · **Führer**."},{"id":"s05","s":"synth","type":"def","t":"Les 3 partis uniques","q":"Le parti unique dans chaque pays ?","r":"**PCUS** (Parti communiste d'Union soviétique) · **PNF** (Parti national fasciste) · **NSDAP**."},{"id":"s06","s":"synth","type":"def","t":"Les 3 polices politiques","q":"La police politique dans chaque pays ?","r":"**NKVD** · **OVRA** · **Gestapo**. *(Le tableau écrit « NKVB » : c'est un lapsus, la leçon dit NKVD.)*"},{"id":"s07","s":"synth","type":"def","t":"Les 3 embrigadements","q":"L'organisation de jeunesse dans chaque pays ?","r":"**Komsomols** · **Gioventù italiana del Littorio** (6-21 ans) · **Jeunesses hitlériennes**."},{"id":"s08","s":"synth","type":"def","t":"Les camps","q":"Le camp d'internement en URSS et en Allemagne ?","r":"URSS : le **Goulag**. Allemagne : les **camps de concentration**, le premier à **Dachau en mars 1933**. *(Case italienne laissée hachurée dans le tableau.)*"},{"id":"p01","s":"synth","type":"piege","t":"Gauche / droite","q":"Quel régime est totalitaire « de gauche », lesquels « de droite » ?","r":"**URSS = de gauche** (marxisme-léninisme). **Italie et Allemagne = de droite** — le cours écrit explicitement « régime totalitaire **de droite** » pour les deux."},{"id":"p02","s":"III2","type":"piege","t":"Chancelier ≠ Führer","q":"Hitler devient-il Führer en 1933 ?","r":"**Non.** **30 janvier 1933** : il est nommé **chancelier** par Hindenburg. Ce n'est qu'en **août 1934**, à la mort d'Hindenburg, qu'il cumule les pouvoirs et devient **Führer / Reichsführer**."},{"id":"p03","s":"III3","type":"piege","t":"Nuremberg ≠ Nuit de Cristal","q":"Lois de Nuremberg et Nuit de Cristal : ne pas confondre.","r":"**1935, lois de Nuremberg** = **exclusion juridique** (nationalité, mariage). **9-10 novembre 1938, Nuit de Cristal** = **violence physique**, un **pogrom d'État**. Trois ans d'écart."},{"id":"p04","s":"IV2","type":"piege","t":"SDN ≠ ONU","q":"SDN et ONU : quel rapport, et quelle erreur éviter ?","r":"La **SDN est l'ancêtre de l'ONU**, créée par le **traité de Versailles** (1919) — pas après 1945. L'ONU, c'est **après** la Seconde Guerre mondiale."},{"id":"p05","s":"IV3","type":"piege","t":"Anschluss ≠ Munich","q":"Anschluss et accords de Munich : quelle différence ?","r":"Les deux sont de **1938**. **Anschluss** = annexion de l'**Autriche**. **Munich** = démantèlement de la **Tchécoslovaquie**, obtenu **avec l'accord** de la France et de la Grande-Bretagne."},{"id":"p06","s":"II2","type":"piege","t":"L'Italie, totalitarisme inachevé","q":"Peut-on dire que l'Italie est un totalitarisme aussi abouti que les deux autres ?","r":"**Non** — les historiens parlent d'une « **société peu totalisable** » : **Église**, **roi** et **tradition régionaliste** font contrepoids. C'est la nuance qui fait gagner des points."},{"id":"p07","s":"I3","type":"piege","t":"La famine n'est pas un accident","q":"La famine de 1933 est-elle une catastrophe naturelle ?","r":"**Non** : elle découle de la **collectivisation** (production désorganisée) et des **réquisitions** qui nourrissent les villes. C'est une **conséquence politique**."}],"maj":"06/10/2026"};
+const $=(s,r=document)=>r.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const md=s=>esc(s).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\*(.+?)\*/g,'<em>$1</em>').replace(/\[\?\]/g,'<span class="unsure" title="lecture incertaine">?</span>').replace(/\n/g,'<br>');
+const h=html=>{const t=document.createElement('template');t.innerHTML=html.trim();return t.content.firstElementChild};
+const fmt=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const today=()=>fmt(new Date());
+const addDays=(iso,n)=>{const d=new Date(iso+'T00:00:00');d.setDate(d.getDate()+n);return fmt(d)};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const ls={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
+
+// ---- thème
+const root=document.documentElement;
+const applyTheme=t=>{if(t)root.setAttribute('data-theme',t);else root.removeAttribute('data-theme')};
+applyTheme(ls.get('fc:theme',null));
+$('#theme').onclick=()=>{const dark=root.getAttribute('data-theme')==='dark'||(!root.getAttribute('data-theme')&&matchMedia('(prefers-color-scheme: dark)').matches);const t=dark?'light':'dark';applyTheme(t);ls.set('fc:theme',t)};
+
+if(!CH){$('#view').innerHTML='<div class="card pad">Paquet introuvable.</div>';return}
+root.style.setProperty('--accent',CH.couleur||'#b8332a');
+document.title=CH.matiere+' · Ch. '+CH.numero+' · Flashcards';
+$('#brand').textContent=CH.matiere+' · Ch. '+CH.numero;
+
+// ---- structure
+const TYPES=Object.assign({def:'Définition',meca:'Mécanisme',chiffre:'Chiffre',auteur:'Auteur',piege:'Piège',synthese:'Synthèse orale'},CH.types||{});
+const flat=[];(function walk(ns,d,p){(ns||[]).forEach(n=>{n._d=d;n._p=p;flat.push(n);walk(n.enfants,d+1,n)})})(CH.plan,0,null);
+const node=id=>flat.find(n=>n.id===id);
+const subIds=n=>{const a=[n.id];(function w(ns){(ns||[]).forEach(c=>{a.push(c.id);w(c.enfants)})})(n.enfants);return a};
+const cardsOf=sid=>CH.cartes.filter(c=>c.s===sid);
+const card=id=>CH.cartes.find(c=>c.id===id);
+const isSynth=c=>c.type==='synthese';
+
+// ---- progression (dans ce navigateur uniquement)
+const KEY='fc:p:'+CH.id;
+let P=ls.get(KEY,{cards:{}});if(!P||typeof P!=='object'||!P.cards)P={cards:{}};
+let saved=true;
+const save=()=>{saved=ls.set(KEY,P)};
+const INTERVALS=[0,1,3,7,14,30];
+const st=id=>P.cards[id]||{box:0,due:null,seen:0,last:null};
+const isDue=id=>{const s=st(id);return !s.due||s.due<=today()};
+function grade(id,g){const s=Object.assign({},st(id));s.seen=(s.seen||0)+1;s.last=g;
+  if(g==='rate'){s.box=0;s.due=today()}else if(g==='dur'){s.box=Math.max(1,s.box||0);s.due=addDays(today(),1)}else{s.box=Math.min(5,(s.box||0)+1);s.due=addDays(today(),INTERVALS[s.box])}
+  P.cards[id]=s;save()}
+function stats(ids){const cs=CH.cartes.filter(c=>ids.includes(c.s));const m=cs.filter(c=>st(c.id).box>=2).length;
+  return{total:cs.length,due:cs.filter(c=>isDue(c.id)).length,mastered:m,seen:cs.filter(c=>st(c.id).seen>0).length,pct:cs.length?m/cs.length:0}}
+const color=s=>!s.seen?'var(--line)':s.pct>=.75?'var(--ok)':s.pct>=.4?'var(--warn)':'var(--bad)';
+
+// ---- sessions
+let S=null;
+function queue(ids,o){const q=[];flat.filter(n=>ids.includes(n.id)).forEach(n=>{let cs=cardsOf(n.id).filter(c=>!o.due||isDue(c.id));
+  const syn=cs.filter(isSynth),nor=cs.filter(c=>!isSynth(c));q.push(...(o.ordered?nor:shuffle(nor)).map(c=>c.id),...syn.map(c=>c.id))});return q}
+function start(ids,o,label){S={q:queue(ids,o||{}),i:0,flip:false,res:{rate:0,dur:0,facile:0},again:{},label:label||'',grid:{}};S.n=S.q.length;render();window.scrollTo({top:0})}
+function doGrade(g){const id=S.q[S.i];grade(id,g);S.res[g]++;if(g==='rate'&&!S.again[id]){S.again[id]=1;S.q.push(id)}S.i++;S.flip=false;S.grid={};render()}
+document.addEventListener('keydown',e=>{if(!S||S.i>=S.q.length||e.metaKey||e.ctrlKey||e.altKey)return;
+  if(e.key===' '){e.preventDefault();S.flip=!S.flip;render()}else if(S.flip&&['1','2','3'].includes(e.key)){e.preventDefault();doGrade(['rate','dur','facile'][+e.key-1])}});
+
+// ---- tableau à cocher
+function grille(c,etat,corr){const g=c.grille,box=h('<div class="gwrap"><table class="gx"><thead><tr><th></th>'+g.colonnes.map(x=>'<th>'+esc(x)+'</th>').join('')+'</tr></thead><tbody></tbody></table></div>');
+  const tb=$('tbody',box);let bons=0;
+  g.lignes.forEach((ln,i)=>{const[lab,bonne]=ln,ch=etat[i],ok=ch===bonne;if(ok)bons++;
+    const tr=h('<tr class="'+(corr?(ok?'ok':'ko'):'')+'"><td>'+esc(lab)+'</td>'+g.colonnes.map(()=>'<td class="c"></td>').join('')+'</tr>');
+    g.colonnes.forEach((x,j)=>{const td=tr.children[j+1];
+      if(corr){if(j===bonne)td.innerHTML='<b style="color:var(--ok)">✓</b>';else if(j===ch)td.innerHTML='<b style="color:var(--bad)">✗</b>'}
+      else{const inp=h('<input type="radio" name="g'+i+'" '+(ch===j?'checked':'')+'>');inp.setAttribute('aria-label',lab+' : '+x);inp.onchange=()=>{etat[i]=j};td.appendChild(inp)}});
+    tb.appendChild(tr)});
+  if(corr)box.appendChild(h('<p class="small" style="font-weight:700;margin:8px 0 0">'+bons+' / '+g.lignes.length+' bien classés</p>'));
+  return box}
+
+// ---- vues
+function home(){const all=flat.map(n=>n.id),g=stats(all),w=h('<div></div>');
+  w.appendChild(h('<div><h1>'+esc(CH.titre)+'</h1><p class="sub">'+esc(CH.matiere)+' · Chapitre '+esc(CH.numero)+' · '+g.total+' cartes</p></div>'));
+  w.appendChild(h('<div class="kpis"><div class="card kpi"><b>'+g.due+'</b><span>à revoir aujourd’hui</span></div><div class="card kpi"><b>'+Math.round(g.pct*100)+' %</b><span>maîtrisé</span></div><div class="card kpi"><b>'+g.seen+'</b><span>cartes déjà vues</span></div></div>'));
+  const b=h('<div class="stack"></div>');
+  const b1=h('<button class="btn pri wide">Réviser maintenant ('+g.due+')</button>');b1.disabled=!g.due;b1.onclick=()=>{const order=flat.slice().sort((a,b)=>stats([a.id]).pct-stats([b.id]).pct).map(n=>n.id);start(order,{due:true},'À revoir aujourd’hui')};
+  const b2=h('<button class="btn wide">Tout le chapitre, dans l’ordre ('+g.total+')</button>');b2.onclick=()=>start(all,{ordered:true},'Tout le chapitre');
+  b.appendChild(b1);b.appendChild(b2);w.appendChild(b);
+  if(!g.due&&g.total)w.appendChild(h('<p class="small muted" style="margin:10px 0 0">Rien à revoir aujourd’hui. Les cartes reviendront à leur date.</p>'));
+  w.appendChild(h('<h2>Les paquets</h2>'));w.appendChild(deckList(CH.plan,0));
+  w.appendChild(h('<h2>Comment ça marche</h2>'));
+  w.appendChild(h('<ul class="how"><li>Lis la question. <b>Réponds à voix haute avant</b> de retourner la carte.</li><li>Note-toi honnêtement : <b>Raté</b> revient tout de suite, <b>Dur</b> demain, <b>Facile</b> dans 1, 3, 7, 14 puis 30 jours.</li><li>Reviens chaque jour sur « Réviser maintenant » : quelques minutes suffisent.</li></ul>'));
+  return w}
+function deckList(nodes,depth){const box=h('<div class="card" style="overflow:hidden"></div>');
+  (function walk(ns,d){ns.forEach(n=>{const s=stats(subIds(n));if(!s.total)return;
+    const own=cardsOf(n.id).length,kids=(n.enfants||[]).some(c=>stats(subIds(c)).total);
+    if(kids&&!own&&d===0){box.appendChild(h('<a class="deck grp" href="#'+encodeURIComponent(n.id)+'">'+esc(n.court||n.titre)+'</a>'))}
+    else{box.appendChild(h('<a class="deck'+(d>0?' sub1':'')+'" href="#'+encodeURIComponent(n.id)+'"><div class="t"><b>'+esc(n.court||n.titre)+'</b><small>'+s.total+' carte'+(s.total>1?'s':'')+(s.due?' · '+s.due+' à revoir':'')+'</small></div><div class="prog"><i style="width:'+(s.pct*100)+'%;background:'+color(s)+'"></i></div><span class="go">›</span></a>'))}
+    if(n.enfants)walk(n.enfants,d+1)})})(nodes,depth);
+  return box}
+function deckView(n){const ids=subIds(n),s=stats(ids),w=h('<div></div>');
+  const chain=[];let p=n._p;while(p){chain.unshift(p.court||p.titre);p=p._p}
+  w.appendChild(h('<p class="small muted" style="margin:0 0 6px"><a href="#">'+esc(CH.matiere)+' · Ch. '+esc(CH.numero)+'</a>'+chain.map(x=>' › '+esc(x)).join('')+'</p>'));
+  w.appendChild(h('<div><h1>'+esc(n.titre||n.court)+'</h1><p class="sub">'+s.total+' cartes · '+s.due+' à revoir · '+Math.round(s.pct*100)+' % maîtrisé</p></div>'));
+  const b=h('<div class="stack"></div>');
+  const b1=h('<button class="btn pri wide">Réviser ce paquet ('+s.due+')</button>');b1.disabled=!s.due;b1.onclick=()=>start(ids,{due:true},n.court||n.titre);
+  const b2=h('<button class="btn wide">Tout le paquet ('+s.total+')</button>');b2.disabled=!s.total;b2.onclick=()=>start(ids,{},n.court||n.titre);
+  const b3=h('<button class="btn sm" style="margin-top:14px">Copier le lien de ce paquet</button>');
+  b3.onclick=()=>{const u=location.href;const done=()=>{b3.textContent='Lien copié ✓';setTimeout(()=>b3.textContent='Copier le lien de ce paquet',1800)};
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(u).then(done,()=>prompt('Copie ce lien :',u));else prompt('Copie ce lien :',u)};
+  b.appendChild(b1);b.appendChild(b2);b.appendChild(b3);w.appendChild(b);
+  if((n.enfants||[]).some(c=>stats(subIds(c)).total)){w.appendChild(h('<h2>Dans ce paquet</h2>'));w.appendChild(deckList(n.enfants,1))}
+  return w}
+function session(){const w=h('<div></div>');
+  if(S.i>=S.q.length){const r=S.res;
+    w.appendChild(h('<div><h1>Session terminée</h1><p class="sub">'+S.n+' carte'+(S.n>1?'s':'')+(S.label?' · '+esc(S.label):'')+'</p></div>'));
+    w.appendChild(h('<div class="res"><span class="chip piege">Raté '+r.rate+'</span><span class="chip">Dur '+r.dur+'</span><span class="chip" style="color:var(--ok)">Facile '+r.facile+'</span></div>'));
+    if(!S.n)w.appendChild(h('<p class="muted">Rien à revoir dans ce paquet aujourd’hui.</p>'));
+    const b=h('<button class="btn pri wide">Retour</button>');b.onclick=()=>{S=null;render();window.scrollTo({top:0})};w.appendChild(b);return w}
+  const c=card(S.q[S.i]);if(!c){S.q.splice(S.i,1);return session()}
+  const n=node(c.s),syn=isSynth(c);
+  const top=h('<div class="top"><span>'+(S.i+1)+' / '+S.q.length+'</span><span class="sp"></span><button class="btn sm">Arrêter</button></div>');
+  top.querySelector('button').onclick=()=>{S.i=S.q.length;render()};w.appendChild(top);
+  w.appendChild(h('<div class="prog" style="margin-bottom:12px"><i style="width:'+(S.i/S.q.length*100)+'%;background:var(--accent)"></i></div>'));
+  const f=h('<div class="card flash'+(syn?' synth':'')+'"><div class="chips"><span class="chip '+esc(c.type)+'">'+esc(TYPES[c.type]||c.type)+'</span><span class="chip">'+esc(n?(n.court||n.titre):'')+'</span></div><div class="q">'+md(c.q)+'</div></div>');
+  if(syn&&!S.flip)f.appendChild(h('<div class="hint">À voix haute, sans support : tout le raisonnement de la partie, avec les exemples. Retourne seulement quand tu as fini.</div>'));
+  if(c.grille)f.appendChild(grille(c,S.grid,S.flip));
+  if(S.flip)f.appendChild(h('<div class="r">'+md(c.r)+'</div>'));
+  if(!S.flip){const b=h('<button class="btn pri wide">'+(c.grille?'Vérifier':'Voir la réponse')+' <kbd>espace</kbd></button>');b.onclick=()=>{S.flip=true;render()};f.appendChild(b)}
+  else{const x=st(c.id),nx=INTERVALS[Math.min(5,(x.box||0)+1)];
+    const g=h('<div class="grade"><button class="g1">Raté<small>tout de suite</small></button><button class="g2">Dur<small>demain</small></button><button class="g3">Facile<small>dans '+nx+' j</small></button></div>');
+    [...g.children].forEach((b,i)=>b.onclick=()=>doGrade(['rate','dur','facile'][i]));f.appendChild(g)}
+  w.appendChild(f);
+  if(!saved)w.appendChild(h('<p class="small" style="color:var(--bad);margin-top:12px">Ton navigateur bloque l’enregistrement (navigation privée ?). Tu peux réviser, mais ta progression ne sera pas gardée.</p>'));
+  return w}
+function render(){const v=$('#view');v.innerHTML='';
+  if(S){v.appendChild(session());return}
+  const id=decodeURIComponent(location.hash.slice(1)),n=id&&node(id);
+  v.appendChild(n?deckView(n):home())}
+window.addEventListener('hashchange',()=>{S=null;render();window.scrollTo({top:0})});
+const ft=$('#foot');
+ft.appendChild(h('<p>Ta progression est enregistrée <b>dans ce navigateur, sur cet appareil</b>. Personne d’autre ne la voit. Les cartes ne peuvent pas être modifiées ici.</p>'));
+const rz=h('<p><button>Remettre ma progression à zéro</button>'+(CH.maj?' · Cartes mises à jour le '+esc(CH.maj):'')+'</p>');
+rz.querySelector('button').onclick=()=>{if(confirm('Effacer ta progression sur ce chapitre ?')){P={cards:{}};ls.del(KEY);S=null;render()}};
+ft.appendChild(rz);
+render();
+})();
+</script>
+</body>
+</html>
