@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Flashcards</title>
+<style>
+:root{
+  --bg:#f6f5f1;--card:#fff;--ink:#1b1b1d;--muted:#6b6b70;--line:#e6e3dc;--soft:#efece5;
+  --accent:#b8332a;--ok:#2f8f5b;--warn:#c98612;--bad:#c23b2e;
+  --r:16px;--sh:0 1px 2px rgba(0,0,0,.04),0 12px 32px -20px rgba(0,0,0,.28);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121214;--card:#1c1c1f;--ink:#ececef;--muted:#9a9aa2;--line:#2c2c31;--soft:#25252a;--sh:0 1px 2px rgba(0,0,0,.5)}}
+:root[data-theme="dark"]{--bg:#121214;--card:#1c1c1f;--ink:#ececef;--muted:#9a9aa2;--line:#2c2c31;--soft:#25252a;--sh:0 1px 2px rgba(0,0,0,.5)}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%}
+button{font:inherit;color:inherit;-webkit-tap-highlight-color:transparent}
+a{color:inherit}
+header{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.bar{max-width:720px;margin:0 auto;padding:10px 18px;display:flex;align-items:center;gap:10px}
+.brand{display:flex;align-items:center;gap:8px;font-weight:700;letter-spacing:-.01em;text-decoration:none;min-width:0}
+.brand i{width:10px;height:10px;border-radius:50%;background:var(--accent);flex:0 0 10px}
+.brand span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sp{flex:1}
+.ib{border:1px solid var(--line);background:var(--card);border-radius:10px;height:34px;min-width:34px;padding:0 10px;cursor:pointer;font-size:14px}
+main{max-width:720px;margin:0 auto;padding:22px 18px 28px}
+h1{font-size:25px;line-height:1.2;margin:0 0 6px;letter-spacing:-.02em}
+h2{font-size:15px;margin:28px 0 10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.sub{color:var(--muted);margin:0 0 18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh)}
+.pad{padding:16px 18px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line);background:var(--card);padding:12px 16px;border-radius:12px;cursor:pointer;font-weight:600;text-decoration:none}
+.btn:hover{border-color:var(--ink)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.wide{width:100%}
+.btn:disabled{opacity:.4;cursor:default}
+.btn.sm{padding:7px 12px;font-size:14px;border-radius:10px}
+.stack>*+*{margin-top:10px}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}
+.kpi{padding:12px 14px}.kpi b{display:block;font-size:24px;letter-spacing:-.02em;line-height:1.1}.kpi span{font-size:13px;color:var(--muted)}
+.how{font-size:14.5px;color:var(--muted);padding-left:18px;margin:0}.how li+li{margin-top:4px}
+.prog{height:6px;background:var(--soft);border-radius:99px;overflow:hidden}.prog i{display:block;height:100%;border-radius:99px;background:var(--ok)}
+.deck{display:flex;align-items:center;gap:12px;padding:13px 16px;border-top:1px solid var(--line);text-decoration:none}
+.deck:first-child{border-top:0}
+.deck:hover{background:var(--soft)}
+.deck .t{flex:1;min-width:0}
+.deck .t b{display:block;font-weight:600}
+.deck .t small{color:var(--muted);font-size:13px}
+.deck .prog{width:70px;flex:0 0 70px}
+.deck .go{color:var(--muted);font-size:18px}
+.deck.grp{background:var(--soft);font-size:13px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:9px 16px}
+.deck.grp:hover{background:var(--soft)}
+.deck.sub1{padding-left:30px}
+.top{display:flex;align-items:center;gap:10px;margin-bottom:10px;color:var(--muted);font-size:14px}
+.flash{padding:22px 20px;min-height:320px;display:flex;flex-direction:column;gap:16px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.chip{font-size:12px;font-weight:600;padding:3px 9px;border-radius:99px;background:var(--soft);color:var(--muted)}
+.chip.piege{background:color-mix(in srgb,var(--bad) 14%,transparent);color:var(--bad)}
+.chip.synthese{background:var(--ink);color:var(--bg)}
+.q{font-size:23px;line-height:1.35;font-weight:650;letter-spacing:-.01em}
+.r{font-size:18px;line-height:1.55;padding-top:16px;border-top:1px dashed var(--line)}
+.hint{font-size:14px;color:var(--muted)}
+.flash.synth{border:2px solid var(--ink)}
+.grade{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.grade button{padding:14px 6px;border-radius:12px;border:1px solid var(--line);background:var(--card);cursor:pointer;font-weight:700;font-size:16px}
+.grade button small{display:block;font-weight:500;color:var(--muted);font-size:12px;margin-top:2px}
+.grade .g1{color:var(--bad)}.grade .g2{color:var(--warn)}.grade .g3{color:var(--ok)}
+.unsure{display:inline-block;background:var(--warn);color:#fff;font-size:11px;font-weight:700;padding:0 6px;border-radius:6px;vertical-align:2px}
+.gwrap{overflow-x:auto}
+table.gx{width:100%;border-collapse:collapse;font-size:15px;min-width:380px}
+table.gx th{font-size:12px;color:var(--muted);padding:6px;border-bottom:1px solid var(--line);text-align:center}
+table.gx th:first-child{text-align:left}
+table.gx td{padding:9px 6px;border-bottom:1px solid var(--line)}
+table.gx td.c{text-align:center;width:90px}
+table.gx tr.ok td{background:color-mix(in srgb,var(--ok) 12%,transparent)}
+table.gx tr.ko td{background:color-mix(in srgb,var(--bad) 12%,transparent)}
+table.gx input{width:20px;height:20px;accent-color:var(--accent)}
+kbd{font:11px ui-monospace,Menlo,monospace;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 5px;color:var(--muted)}
+.btn.pri kbd{color:#fff;border-color:rgba(255,255,255,.55);background:transparent}
+.res{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 16px}
+.muted{color:var(--muted)}.small{font-size:13.5px}
+footer{max-width:720px;margin:0 auto;padding:6px 18px 40px;color:var(--muted);font-size:13px}
+footer button{background:none;border:0;padding:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px}
+@media (max-width:520px){.q{font-size:21px}.kpi b{font-size:21px}.deck .prog{display:none}h1{font-size:22px}}
+@media (hover:none){kbd{display:none}}
+</style>
+</head>
+<body>
+<header><div class="bar">
+  <a class="brand" href="#"><i></i><span id="brand">Flashcards</span></a>
+  <span class="sp"></span>
+  <button class="ib" id="theme" title="Clair / sombre" aria-label="Changer de thème">◐</button>
+</div></header>
+<main id="view"></main>
+<footer id="foot"></footer>
+<script>
+(function(){
+'use strict';
+const CH={"id":"ses-ch02-plan","matiere":"SES","numero":2,"titre":"Plan détaillé : la structure sociale française","couleur":"#14366b","types":{"def":"Définition","meca":"Argument","chiffre":"Chiffre","auteur":"Auteur","piege":"Piège","synthese":"Grande carte"},"plan":[{"id":"T","court":"La trame","titre":"La trame : le chapitre en 8 lignes"},{"id":"G1","court":"Partie 1","titre":"Partie 1 : Comment caractériser la structure sociale française ?","enfants":[{"id":"g-intro","court":"Intro : Hervé","titre":"Introduction : quels critères pour le portrait d'un individu ?"},{"id":"G1I","court":"I. Facteurs multiples","titre":"I. Des facteurs multiples de structuration et de hiérarchisation de l'espace social","enfants":[{"id":"g-IA","court":"A. Les PCS","titre":"A. Les PCS, un outil pour faire apparaître des groupes homogènes et différenciés"},{"id":"g-IB","court":"B. PCS et diplôme","titre":"B. Des inégalités selon la PCS et le diplôme"},{"id":"g-IC","court":"C. Autres facteurs","titre":"C. De multiples autres facteurs","enfants":[{"id":"g-IC1","court":"1. Sexe","titre":"1. Le sexe"},{"id":"g-IC2","court":"2. Âge","titre":"2. L'âge"},{"id":"g-IC3","court":"3. Lieu","titre":"3. Le lieu de résidence"},{"id":"g-IC4","court":"4. Ménage","titre":"4. La composition du ménage"},{"id":"g-IC5","court":"5. Cumul","titre":"5. Ces facteurs se cumulent"}]}]},{"id":"g-II","court":"II. 4 mutations","titre":"II. Les évolutions de la structure socioprofessionnelle depuis 1950"}]},{"id":"G2","court":"Partie 2","titre":"Partie 2 : Comment analyser la structure de la société ?","enfants":[{"id":"G2I","court":"I. Analyses traditionnelles","titre":"I. Les analyses traditionnelles de la structure sociale","enfants":[{"id":"g-ctx","court":"Contexte XIXe","titre":"Contexte : pourquoi la sociologie naît au XIXe"},{"id":"g-M","court":"A. Marx","titre":"A. La théorie des classes sociales de Marx"},{"id":"g-W","court":"B. Weber","titre":"B. La théorie des classes sociales de Weber"}]},{"id":"G2II","court":"II. Notion en débat","titre":"II. Les classes sociales : une notion en débat. A. La fin des classes sociales ?","enfants":[{"id":"g-a","court":"a. Inter-classe","titre":"a. Inter-classe : la société se moyennise"},{"id":"g-b","court":"b. Intra-classe","titre":"b. Intra-classe : une frontière se creuse dans les classes populaires"}]}]}],"cartes":[{"id":"pd-t1","s":"T","type":"meca","t":"La logique en 1 phrase","q":"La logique du chapitre en 1 phrase ?","r":"Je **décris** la société (Partie 1), je cherche **l'outil pour l'analyser** (Marx, Weber), je **teste** si cet outil marche encore aujourd'hui (le débat)."},{"id":"pd-t2","s":"T","type":"meca","t":"Le squelette de la Partie 1","q":"Le squelette de la Partie 1 ?","r":"**Intro** Portrait d'Hervé\n**I. Des facteurs multiples**\nA. Les PCS\nB. PCS et diplôme\nC. Autres facteurs : sexe, âge, lieu, ménage, cumul\n**II. Les évolutions depuis 1950**\nSalarisation, tertiarisation, qualification, féminisation"},{"id":"pd-t3","s":"T","type":"meca","t":"Le squelette de la Partie 2","q":"Le squelette de la Partie 2 ?","r":"**I. Analyses traditionnelles**\nContexte : le XIXe et ses 3 révolutions\nA. Marx\nB. Weber\n**II. Une notion en débat**\nA. La fin des classes ?\n1.a Inter-classe : moyennisation\n1.b Intra-classe : les non-qualifiés\nSuite : à venir"},{"id":"pd-t0","s":"T","type":"synthese","t":"La trame en 8 lignes","q":"Raconte tout le chapitre en 8 lignes.","r":"1. **Question :** comment est rangée la société française ?\n2. **La photo :** on range les gens selon plusieurs critères. Profession et diplôme, puis sexe, âge, lieu, ménage. Ils se cumulent.\n3. **Le film :** depuis 1950, 4 mutations : salarisation, tertiarisation, qualification, féminisation.\n4. **Le problème :** ces groupes sont-ils de vraies **classes sociales** ? Il faut une théorie.\n5. **Les théories :** Marx (1 critère, la lutte) et Weber (3 critères, aucune classe « réelle »).\n6. **Le débat :** ces théories du XIXe marchent-elles encore ?\n7. **Contre les classes :** entre les classes, moyennisation (Mendras). Dans les classes, le bloc populaire se coupe en deux.\n8. **La suite :** les classes persistent-elles quand même ? (à venir)"},{"id":"pd-i1","s":"g-intro","type":"def","t":"Espace social","q":"Espace social : définition ?","r":"Représentation de la société où les **individus** sont positionnés selon leurs caractéristiques."},{"id":"pd-i2","s":"g-intro","type":"def","t":"Structure sociale","q":"Structure sociale : définition ?","r":"Représentation de la société où les **groupes** sociaux sont **différenciés et hiérarchisés**."},{"id":"pd-i0","s":"g-intro","type":"synthese","t":"Intro : Hervé","q":"Introduction : l'idée et ses sous-parties ?","r":"**Idée :** on peut situer quelqu'un dans la société avec quelques critères.\n• **Exemple : Hervé** (Renahy, *Les gars du coin*, 2010) : ouvrier, CAP, homme, jeune, fils d'ouvrier. Donc classes populaires.\n• **Espace social :** les individus positionnés.\n• **Structure sociale :** les groupes différenciés et hiérarchisés.\n**Transition :** quels sont ces critères ?"},{"id":"pd-a1","s":"g-IA","type":"meca","t":"Les 6 groupes","q":"I.A : les 6 groupes des PCS ?","r":"Agriculteurs · artisans-commerçants-chefs d'entreprise · cadres · professions intermédiaires · employés · ouvriers.\nInsee : CSP en 1954, PCS en 1982."},{"id":"pd-a2","s":"g-IA","type":"piege","t":"Les critères","q":"I.A : les critères de classement, et celui qui n'en est pas un ?","r":"Statut, secteur, taille, public ou privé, qualification, hiérarchie.\n**Le salaire n'est pas un critère.**"},{"id":"pd-a3","s":"g-IA","type":"meca","t":"L'intérêt des PCS","q":"I.A : à quoi servent les PCS ?","r":"Créer des groupes avec une **homogénéité sociale** : mêmes comportements de conso, de mode, de vote."},{"id":"pd-a0","s":"g-IA","type":"synthese","t":"I.A Les PCS","q":"I.A Les PCS : l'idée et ses sous-parties ?","r":"**Idée :** l'Insee range les actifs en groupes qui se ressemblent.\n• **L'outil :** nomenclature, CSP 1954, PCS 1982.\n• **6 groupes**\n• **Critères :** statut, secteur, taille, public ou privé, qualification, hiérarchie. Pas le salaire.\n• **Intérêt :** homogénéité sociale."},{"id":"pd-b1","s":"g-IB","type":"meca","t":"Diplôme et salaire","q":"I.B : la chaîne du diplôme au salaire ?","r":"Diplôme élevé → qualification → capital humain → productivité → **salaire élevé**."},{"id":"pd-b2","s":"g-IB","type":"chiffre","t":"Le diplôme protège","q":"I.B : prouve que le diplôme protège.","r":"Sans diplôme : **49 %** de chômage, **34 %** en CDI.\nÉcoles de commerce et d'ingénieurs : **90 %** en CDI.\n(Céreq, génération 2013)"},{"id":"pd-b3","s":"g-IB","type":"chiffre","t":"Jusqu'à la santé","q":"I.B : l'inégalité va jusqu'où ? Pourquoi ?","r":"Homme cadre **84 ans**, homme ouvrier **77 ans**.\nPourquoi : pratiques à risque, accès aux soins, risques du travail."},{"id":"pd-b0","s":"g-IB","type":"synthese","t":"I.B PCS et diplôme","q":"I.B Inégalités selon la PCS et le diplôme : l'idée et ses sous-parties ?","r":"**Idée :** profession et diplôme hiérarchisent. Ils décident du salaire, de l'emploi, et même de la durée de vie.\n• **Mécanisme :** diplôme → qualification → capital humain → productivité → salaire.\n• **Le diplôme protège :** 49 % de chômage sans diplôme.\n• **Jusqu'à la santé :** 84 ans contre 77 ans.\n**Transition :** la profession ne suffit pas à tout expliquer."},{"id":"pd-c0","s":"g-IC","type":"synthese","t":"I.C Autres facteurs","q":"I.C Autres facteurs : l'idée et ses sous-parties ?","r":"**Idée :** à profession égale, d'autres critères hiérarchisent. Et ils s'additionnent.\n1. **Sexe :** 24 % d'écart, socialisation genrée.\n2. **Âge :** cycle de vie, Modigliani.\n3. **Lieu :** ségrégation, entre-soi.\n4. **Ménage :** unités de consommation.\n5. **Cumul :** chômage, culture, Bourdieu.\n**Transition :** voilà la photo. Mais elle bouge depuis 1950."},{"id":"pd-s1","s":"g-IC1","type":"chiffre","t":"L'écart","q":"Sexe : l'écart de revenu salarial ?","r":"**24 %** d'écart, dont **9,9 %** à conditions équivalentes (discrimination)."},{"id":"pd-s2","s":"g-IC1","type":"meca","t":"Socialisation genrée","q":"Sexe, cause 1 : pourquoi les femmes vont vers des emplois moins payés ?","r":"**Socialisation genrée :** les « choix » sont construits. Filières moins payées, autocensure.\nBaudelot et Establet, *Allez les filles !* : meilleures à l'école, moins bien payées ensuite."},{"id":"pd-s3","s":"g-IC1","type":"meca","t":"Travail domestique","q":"Sexe, cause 2 : quel lien entre travail domestique et salaire ?","r":"Plus de travail domestique → moins d'heures sup, plus de temps partiel → moins de promotions."},{"id":"pd-s4","s":"g-IC1","type":"def","t":"Plafond de verre","q":"Plafond de verre : idée et chiffre ?","r":"Les femmes accèdent moins aux postes de pouvoir. **90 %** des hauts dirigeants sont des hommes."},{"id":"pd-s0","s":"g-IC1","type":"synthese","t":"I.C.1 Le sexe","q":"I.C.1 Le sexe : l'idée et ses sous-parties ?","r":"**Idée :** à poste comparable, le sexe hiérarchise encore.\n• **24 % d'écart**, dont 9,9 % à conditions équivalentes.\n• **Socialisation genrée** (Baudelot et Establet).\n• **Travail domestique** → moins de promotions.\n• **Plafond de verre :** 90 % de dirigeants hommes."},{"id":"pd-g1","s":"g-IC2","type":"auteur","t":"Modigliani","q":"Âge : le cycle de vie de Modigliani ?","r":"Jeune, on s'**endette**. Actif, on **épargne**. Retraité, on **désépargne**."},{"id":"pd-g2","s":"g-IC2","type":"chiffre","t":"Le patrimoine","q":"Âge : le chiffre du patrimoine ?","r":"**69 900 €** avant 30 ans, **337 500 €** à 50-59 ans (Insee 2018)."},{"id":"pd-g3","s":"g-IC2","type":"meca","t":"Cumulatif","q":"Âge : pourquoi revenu et patrimoine sont cumulatifs ?","r":"Le revenu fait le patrimoine, le patrimoine fait du revenu."},{"id":"pd-g0","s":"g-IC2","type":"synthese","t":"I.C.2 L'âge","q":"I.C.2 L'âge : l'idée et ses sous-parties ?","r":"**Idée :** la place dans le cycle de vie change la richesse.\n• **Modigliani :** s'endetter, épargner, désépargner.\n• **Chiffre :** 69 900 € contre 337 500 €.\n• **Cumulatif :** revenu et patrimoine se nourrissent."},{"id":"pd-l1","s":"g-IC3","type":"meca","t":"Ségrégation","q":"Lieu : le mécanisme de la ségrégation résidentielle ?","r":"Le **prix du logement** trie les ménages."},{"id":"pd-l2","s":"g-IC3","type":"auteur","t":"Oberti","q":"Lieu : ce que montre Oberti ?","r":"Les quartiers diffèrent par leurs habitants et leurs équipements. Mieux dotés, ils attirent les favorisés : l'**entre-soi**."},{"id":"pd-l3","s":"g-IC3","type":"auteur","t":"Maurin","q":"Lieu : ce que montre Maurin ?","r":"*Le ghetto français* : chacun évite le groupe juste en dessous."},{"id":"pd-l0","s":"g-IC3","type":"synthese","t":"I.C.3 Le lieu","q":"I.C.3 Le lieu de résidence : l'idée et ses sous-parties ?","r":"**Idée :** on ne vit pas au hasard. L'espace reflète et renforce les inégalités.\n• **Ségrégation :** le prix trie.\n• **Oberti :** l'entre-soi.\n• **Maurin :** on évite le groupe juste en dessous."},{"id":"pd-m1","s":"g-IC4","type":"meca","t":"Niveau de vie","q":"Ménage : comment se calcule le niveau de vie ?","r":"Revenu disponible / unités de consommation.\nÀ revenu égal, plus on est nombreux, plus on est bas."},{"id":"pd-m2","s":"g-IC4","type":"chiffre","t":"Monoparentales","q":"Ménage : l'exemple clé ?","r":"Les familles monoparentales : un seul salaire, et **84 %** ont une femme à leur tête."},{"id":"pd-m0","s":"g-IC4","type":"synthese","t":"I.C.4 Le ménage","q":"I.C.4 La composition du ménage : l'idée et ses sous-parties ?","r":"**Idée :** le niveau de vie dépend de combien vivent sur le revenu.\n• **Mécanisme :** revenu / unités de consommation.\n• **Exemple :** familles monoparentales, 84 % de femmes."},{"id":"pd-k1","s":"g-IC5","type":"chiffre","t":"Chômage","q":"Cumul : l'exemple du chômage ?","r":"Femmes en famille monoparentale : environ **2 fois** plus au chômage que les femmes en couple avec enfants."},{"id":"pd-k2","s":"g-IC5","type":"auteur","t":"L'amour de l'art","q":"Cumul : ce que montre Bourdieu avec le musée ?","r":"*L'amour de l'art* : même gratuit, le musée n'attire pas les pauvres. Ce n'est pas l'argent, c'est le **capital culturel**."},{"id":"pd-k3","s":"g-IC5","type":"def","t":"Capital culturel","q":"Les 3 formes de capital culturel ?","r":"**Objectivé** (livres), **institutionnalisé** (diplôme), **incorporé** (façon de parler)."},{"id":"pd-k4","s":"g-IC5","type":"def","t":"Habitus","q":"Habitus : définition ?","r":"Les dispositions propres à une classe."},{"id":"pd-k0","s":"g-IC5","type":"synthese","t":"I.C.5 Le cumul","q":"I.C.5 Le cumul : l'idée et ses sous-parties ?","r":"**Idée :** les facteurs ne jouent pas seuls, ils s'additionnent.\n• **Chômage :** sexe + ménage, 2 fois plus.\n• **Culture :** Bourdieu, le capital culturel et ses 3 formes.\n• **Habitus.**"},{"id":"pd-u1","s":"g-II","type":"meca","t":"Salarisation","q":"Salarisation : chiffre et pourquoi ?","r":"**56 %** de salariés début XXe, **90 %** en 2010.\nPourquoi : les indépendants reculent. Concurrence des prix bas (Ikea), mécanisation agricole, grandes surfaces."},{"id":"pd-u2","s":"g-II","type":"meca","t":"Tertiarisation","q":"Tertiarisation : chiffre et pourquoi ?","r":"Tertiaire : environ **38 %** (1954) → **80 %** (2024). Primaire : **28 %** → **2 %**.\nPourquoi : progrès technique et délocalisations d'un côté, vieillissement et loisirs de l'autre."},{"id":"pd-u3","s":"g-II","type":"meca","t":"Qualification","q":"Élévation de la qualification : chiffre et pourquoi ?","r":"Cadres : **2 → 6,7 millions** (+235 %, 1984-2024).\nPourquoi : massification scolaire (80 % au bac), progrès technique, désindustrialisation."},{"id":"pd-u4","s":"g-II","type":"piege","t":"Polarisation","q":"La limite clé de la qualification ?","r":"**La polarisation.** Ouvriers peu qualifiés : 2,9 → 0,6 M. Mais employés peu qualifiés : 2,3 → 3,2 M.\nL'emploi peu qualifié ne disparaît pas, il passe dans les services."},{"id":"pd-u5","s":"g-II","type":"meca","t":"Féminisation","q":"Féminisation : chiffre et pourquoi ?","r":"**48 %** des emplois occupés par des femmes en 2018.\nPourquoi : tertiarisation (soin, éducation), normes, droit (1965), maîtrise du corps (Neuwirth 1967, IVG 1975), divorce (1975)."},{"id":"pd-u0","s":"g-II","type":"synthese","t":"II. Les 4 mutations","q":"II. Les évolutions depuis 1950 : l'idée et ses sous-parties ?","r":"**Idée :** la société devient plus salariée, plus tertiaire, plus qualifiée, plus féminisée.\n1. **Salarisation :** 90 % en 2010.\n2. **Tertiarisation :** 80 % en 2024.\n3. **Qualification :** +235 % de cadres. Limite : la polarisation.\n4. **Féminisation :** 48 % en 2018.\n**Transition :** on sait décrire la structure. Reste à savoir comment l'analyser."},{"id":"pd-x1","s":"g-ctx","type":"meca","t":"Les 3 révolutions","q":"Les 3 révolutions du XIXe ?","r":"**Politique** (1789), **économique** (usine, fin des corporations en 1791), **spirituelle** (la science remplace Dieu)."},{"id":"pd-x2","s":"g-ctx","type":"auteur","t":"Durkheim","q":"Durkheim, 1893 : quel passage ?","r":"De la solidarité **mécanique** (similarité) à la solidarité **organique** (complémentarité). L'individualisme émerge."},{"id":"pd-x3","s":"g-ctx","type":"meca","t":"L'ouvrier du XIXe","q":"L'ouvrier du XIXe, et les 2 accroches ?","r":"Exploité, mal payé, entassé en ville.\nAccroches : Hugo, *Melancholia*. Zola, *Germinal*."},{"id":"pd-x0","s":"g-ctx","type":"synthese","t":"Contexte XIXe","q":"Contexte du XIXe : l'idée et ses sous-parties ?","r":"**Idée :** la société explose. La sociologie arrive pour comprendre.\n• **3 révolutions :** politique, économique, spirituelle.\n• **Conséquence :** l'ouvrier du XIXe.\n• **Durkheim :** de la solidarité mécanique à l'organique."},{"id":"pd-r1","s":"g-M","type":"meca","t":"Critère économique","q":"Marx : le critère économique ?","r":"La **place dans le processus de production**. Le capitaliste possède, l'ouvrier vend sa force de travail."},{"id":"pd-r2","s":"g-M","type":"def","t":"Exploitation","q":"Marx : exploitation et plus-value ?","r":"Le salarié est payé moins que ce qu'il crée. La différence = **plus-value**."},{"id":"pd-r3","s":"g-M","type":"def","t":"Approche réaliste","q":"Marx : approche réaliste ?","r":"Les classes existent déjà, le sociologue les met en lumière."},{"id":"pd-r4","s":"g-M","type":"def","t":"En soi / pour soi","q":"Marx : classe en soi et classe pour soi ?","r":"**En soi :** même position, réalité objective.\n**Pour soi :** conscience d'intérêts communs, et volonté de se mobiliser."},{"id":"pd-r5","s":"g-M","type":"meca","t":"Paysans parcellaires","q":"Marx : l'exemple des paysans parcellaires ?","r":"Isolés : classe en soi, mais pas pour soi. Des « pommes de terre dans un sac »."},{"id":"pd-r6","s":"g-M","type":"meca","t":"Lutte des classes","q":"Marx : la lutte des classes ?","r":"**Lutte = conscience.** Sans mobilisation, pas de classe. Bourgeoisie contre ouvriers, intérêts antagonistes."},{"id":"pd-r0","s":"g-M","type":"synthese","t":"A. Marx","q":"A. Marx : l'idée et ses sous-parties ?","r":"**Idée :** la société est coupée en deux par la propriété des moyens de production. Les classes se forment dans la lutte.\n• **Critère économique :** place dans la production.\n• **Exploitation :** plus-value.\n• **Réaliste :** les classes existent déjà.\n• **En soi / pour soi :** exemple des paysans parcellaires.\n• **Lutte des classes :** lutte = conscience."},{"id":"pd-w1","s":"g-W","type":"def","t":"Les 3 ordres","q":"Weber : les 3 ordres et leurs groupes ?","r":"**Économique :** classes sociales (revenu, patrimoine, position).\n**Social :** groupes de statut (prestige).\n**Politique :** partis (accès au pouvoir)."},{"id":"pd-w2","s":"g-W","type":"meca","t":"Indépendants, corrélés","q":"Weber : les 3 dimensions sont-elles liées ?","r":"**Indépendantes mais corrélées :** être riche donne souvent prestige et pouvoir, pas toujours."},{"id":"pd-w3","s":"g-W","type":"meca","t":"Le bal des débutantes","q":"Weber : l'exemple du groupe de statut ?","r":"Le **bal des débutantes** : le prestige social."},{"id":"pd-w4","s":"g-W","type":"piege","t":"Marx contre Weber","q":"Marx contre Weber : les 3 oppositions ?","r":"**Critères :** 1, unidimensionnel. Contre 3, multidimensionnel.\n**Les classes :** réalistes (elles existent). Contre nominalistes (le sociologue les construit).\n**Rapport :** domination, lutte. Contre pas de rapport de domination."},{"id":"pd-w0","s":"g-W","type":"synthese","t":"B. Weber","q":"B. Weber : l'idée et ses sous-parties ?","r":"**Idée :** un seul critère ne suffit pas. On peut être haut sur un plan et bas sur un autre.\n• **Économique :** classes sociales.\n• **Social :** groupes de statut (bal des débutantes).\n• **Politique :** partis.\n• **Indépendants mais corrélés.**\n• **Contre Marx :** multidimensionnel, nominaliste.\n**Transition :** ces théories datent du XIXe. Marchent-elles encore ?"},{"id":"pd-d1","s":"G2II","type":"def","t":"Classe sociale","q":"Classe sociale : définition ?","r":"Ensemble d'individus qui occupent une **position similaire** dans l'ordre socio-économique et partagent des **intérêts communs**."},{"id":"pd-d2","s":"G2II","type":"piege","t":"Inter ou intra","q":"Inter-classe et intra-classe ?","r":"**Inter = entre** les classes. **Intra = dans** une classe.\nTon cahier les inverse."},{"id":"pd-d0","s":"G2II","type":"synthese","t":"II.A La fin des classes ?","q":"II.A La fin des classes ? L'idée et ses sous-parties ?","r":"**Idée :** les frontières inter et intra-classe se brouillent.\n**a. Inter-classe :** la société se moyennise. Toupie, modes de vie, inégalités.\n**b. Intra-classe :** le bloc populaire se coupe en deux. Précarité, travail, salaire.\n**Transition :** les classes ont-elles disparu pour autant ? (Suite à venir.)"},{"id":"pd-e1","s":"g-a","type":"auteur","t":"Mendras et la toupie","q":"Argument 1 : Mendras et la toupie ?","r":"1988 : plus une pyramide, une toupie. Élite **3 %**, pauvres **7 %**. Gros milieu : constellation populaire **50 %**, centrale **25 %**.\nContre Marx : plus d'antagonisme à deux."},{"id":"pd-e2","s":"g-a","type":"chiffre","t":"Modes de vie","q":"Argument 2 : l'homogénéisation des modes de vie ?","r":"La consommation de masse rapproche tout le monde.\nLave-vaisselle : environ **20 %** en 1980, environ **60 %** en 2012. L'objet ne distingue plus."},{"id":"pd-e3","s":"g-a","type":"chiffre","t":"Rapport interdécile","q":"Argument 3 : la baisse des inégalités de revenus ?","r":"Rapport D9/D1 : **4,6** en 1970, **3,6** en 2010."},{"id":"pd-e0","s":"g-a","type":"synthese","t":"a. Moyennisation","q":"a. Inter-classe : l'idée et ses sous-parties ?","r":"**Idée :** depuis les Trente Glorieuses, les distances entre classes s'amenuisent.\n• **Argument 1 :** Mendras et la toupie.\n• **Argument 2 :** homogénéisation des modes de vie.\n• **Argument 3 :** baisse des inégalités, D9/D1 de 4,6 à 3,6."},{"id":"pd-f1","s":"g-b","type":"chiffre","t":"La précarité","q":"Argument 1 : la précarité des non-qualifiés ?","r":"CDD, temps partiel subi, intérim.\nChômage des ouvriers non qualifiés **17,8 %** contre **9,6 %** pour les qualifiés (Insee 2018), soit environ **1,9 fois** plus."},{"id":"pd-f2","s":"g-b","type":"meca","t":"Le travail","q":"Argument 2 : le travail des non-qualifiés ?","r":"Travail répétitif, « OS du tertiaire » (caissières), horaires décalés."},{"id":"pd-f3","s":"g-b","type":"chiffre","t":"Le salaire","q":"Argument 3 : l'écart de salaire ?","r":"**35 %** de moins pour les employés non qualifiés que pour les qualifiés en 2002, **37 %** en 1990. Le fossé ne se referme pas."},{"id":"pd-f4","s":"g-b","type":"meca","t":"Le lien avec Marx","q":"Les non-qualifiés : quel lien avec Marx ?","r":"Classe **en soi**, mais isolés, donc pas **pour soi**. Comme les paysans parcellaires."},{"id":"pd-f0","s":"g-b","type":"synthese","t":"b. Intra-classe","q":"b. Intra-classe : l'idée et ses sous-parties ?","r":"**Idée :** les non-qualifiés se détachent des qualifiés, au point de former peut-être une nouvelle classe (Amossé et Chardon).\n• **Précarité :** 17,8 % contre 9,6 %.\n• **Travail :** « OS du tertiaire ».\n• **Salaire :** 35 % de moins.\n• **Lien Marx :** en soi, pas pour soi.\n• **Lien Partie 1 :** polarisation."}],"maj":"03/11/2026"};
+const $=(s,r=document)=>r.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const md=s=>esc(s).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\*(.+?)\*/g,'<em>$1</em>').replace(/\[\?\]/g,'<span class="unsure" title="lecture incertaine">?</span>').replace(/\n/g,'<br>');
+const h=html=>{const t=document.createElement('template');t.innerHTML=html.trim();return t.content.firstElementChild};
+const fmt=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const today=()=>fmt(new Date());
+const addDays=(iso,n)=>{const d=new Date(iso+'T00:00:00');d.setDate(d.getDate()+n);return fmt(d)};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const ls={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
+
+// ---- thème
+const root=document.documentElement;
+const applyTheme=t=>{if(t)root.setAttribute('data-theme',t);else root.removeAttribute('data-theme')};
+applyTheme(ls.get('fc:theme',null));
+$('#theme').onclick=()=>{const dark=root.getAttribute('data-theme')==='dark'||(!root.getAttribute('data-theme')&&matchMedia('(prefers-color-scheme: dark)').matches);const t=dark?'light':'dark';applyTheme(t);ls.set('fc:theme',t)};
+
+if(!CH){$('#view').innerHTML='<div class="card pad">Paquet introuvable.</div>';return}
+root.style.setProperty('--accent',CH.couleur||'#b8332a');
+document.title=CH.matiere+' · Ch. '+CH.numero+' · Flashcards';
+$('#brand').textContent=CH.matiere+' · Ch. '+CH.numero;
+
+// ---- structure
+const TYPES=Object.assign({def:'Définition',meca:'Mécanisme',chiffre:'Chiffre',auteur:'Auteur',piege:'Piège',synthese:'Synthèse orale'},CH.types||{});
+const flat=[];(function walk(ns,d,p){(ns||[]).forEach(n=>{n._d=d;n._p=p;flat.push(n);walk(n.enfants,d+1,n)})})(CH.plan,0,null);
+const node=id=>flat.find(n=>n.id===id);
+const subIds=n=>{const a=[n.id];(function w(ns){(ns||[]).forEach(c=>{a.push(c.id);w(c.enfants)})})(n.enfants);return a};
+const cardsOf=sid=>CH.cartes.filter(c=>c.s===sid);
+const card=id=>CH.cartes.find(c=>c.id===id);
+const isSynth=c=>c.type==='synthese';
+
+// ---- progression (dans ce navigateur uniquement)
+const KEY='fc:p:'+CH.id;
+let P=ls.get(KEY,{cards:{}});if(!P||typeof P!=='object'||!P.cards)P={cards:{}};
+let saved=true;
+const save=()=>{saved=ls.set(KEY,P)};
+const INTERVALS=[0,1,3,7,14,30];
+const st=id=>P.cards[id]||{box:0,due:null,seen:0,last:null};
+const isDue=id=>{const s=st(id);return !s.due||s.due<=today()};
+function grade(id,g){const s=Object.assign({},st(id));s.seen=(s.seen||0)+1;s.last=g;
+  if(g==='rate'){s.box=0;s.due=today()}else if(g==='dur'){s.box=Math.max(1,s.box||0);s.due=addDays(today(),1)}else{s.box=Math.min(5,(s.box||0)+1);s.due=addDays(today(),INTERVALS[s.box])}
+  P.cards[id]=s;save()}
+function stats(ids){const cs=CH.cartes.filter(c=>ids.includes(c.s));const m=cs.filter(c=>st(c.id).box>=2).length;
+  return{total:cs.length,due:cs.filter(c=>isDue(c.id)).length,mastered:m,seen:cs.filter(c=>st(c.id).seen>0).length,pct:cs.length?m/cs.length:0}}
+const color=s=>!s.seen?'var(--line)':s.pct>=.75?'var(--ok)':s.pct>=.4?'var(--warn)':'var(--bad)';
+
+// ---- sessions
+let S=null;
+function queue(ids,o){const q=[];flat.filter(n=>ids.includes(n.id)).forEach(n=>{let cs=cardsOf(n.id).filter(c=>!o.due||isDue(c.id));
+  const syn=cs.filter(isSynth),nor=cs.filter(c=>!isSynth(c));q.push(...(o.ordered?nor:shuffle(nor)).map(c=>c.id),...syn.map(c=>c.id))});return q}
+function start(ids,o,label){S={q:queue(ids,o||{}),i:0,flip:false,res:{rate:0,dur:0,facile:0},again:{},label:label||'',grid:{}};S.n=S.q.length;render();window.scrollTo({top:0})}
+function doGrade(g){const id=S.q[S.i];grade(id,g);S.res[g]++;if(g==='rate'&&!S.again[id]){S.again[id]=1;S.q.push(id)}S.i++;S.flip=false;S.grid={};render()}
+document.addEventListener('keydown',e=>{if(!S||S.i>=S.q.length||e.metaKey||e.ctrlKey||e.altKey)return;
+  if(e.key===' '){e.preventDefault();S.flip=!S.flip;render()}else if(S.flip&&['1','2','3'].includes(e.key)){e.preventDefault();doGrade(['rate','dur','facile'][+e.key-1])}});
+
+// ---- tableau à cocher
+function grille(c,etat,corr){const g=c.grille,box=h('<div class="gwrap"><table class="gx"><thead><tr><th></th>'+g.colonnes.map(x=>'<th>'+esc(x)+'</th>').join('')+'</tr></thead><tbody></tbody></table></div>');
+  const tb=$('tbody',box);let bons=0;
+  g.lignes.forEach((ln,i)=>{const[lab,bonne]=ln,ch=etat[i],ok=ch===bonne;if(ok)bons++;
+    const tr=h('<tr class="'+(corr?(ok?'ok':'ko'):'')+'"><td>'+esc(lab)+'</td>'+g.colonnes.map(()=>'<td class="c"></td>').join('')+'</tr>');
+    g.colonnes.forEach((x,j)=>{const td=tr.children[j+1];
+      if(corr){if(j===bonne)td.innerHTML='<b style="color:var(--ok)">✓</b>';else if(j===ch)td.innerHTML='<b style="color:var(--bad)">✗</b>'}
+      else{const inp=h('<input type="radio" name="g'+i+'" '+(ch===j?'checked':'')+'>');inp.setAttribute('aria-label',lab+' : '+x);inp.onchange=()=>{etat[i]=j};td.appendChild(inp)}});
+    tb.appendChild(tr)});
+  if(corr)box.appendChild(h('<p class="small" style="font-weight:700;margin:8px 0 0">'+bons+' / '+g.lignes.length+' bien classés</p>'));
+  return box}
+
+// ---- vues
+function home(){const all=flat.map(n=>n.id),g=stats(all),w=h('<div></div>');
+  w.appendChild(h('<div><h1>'+esc(CH.titre)+'</h1><p class="sub">'+esc(CH.matiere)+' · Chapitre '+esc(CH.numero)+' · '+g.total+' cartes</p></div>'));
+  w.appendChild(h('<div class="kpis"><div class="card kpi"><b>'+g.due+'</b><span>à revoir aujourd’hui</span></div><div class="card kpi"><b>'+Math.round(g.pct*100)+' %</b><span>maîtrisé</span></div><div class="card kpi"><b>'+g.seen+'</b><span>cartes déjà vues</span></div></div>'));
+  const b=h('<div class="stack"></div>');
+  const b1=h('<button class="btn pri wide">Réviser maintenant ('+g.due+')</button>');b1.disabled=!g.due;b1.onclick=()=>{const order=flat.slice().sort((a,b)=>stats([a.id]).pct-stats([b.id]).pct).map(n=>n.id);start(order,{due:true},'À revoir aujourd’hui')};
+  const b2=h('<button class="btn wide">Tout le chapitre, dans l’ordre ('+g.total+')</button>');b2.onclick=()=>start(all,{ordered:true},'Tout le chapitre');
+  b.appendChild(b1);b.appendChild(b2);w.appendChild(b);
+  if(!g.due&&g.total)w.appendChild(h('<p class="small muted" style="margin:10px 0 0">Rien à revoir aujourd’hui. Les cartes reviendront à leur date.</p>'));
+  w.appendChild(h('<h2>Les paquets</h2>'));w.appendChild(deckList(CH.plan,0));
+  w.appendChild(h('<h2>Comment ça marche</h2>'));
+  w.appendChild(h('<ul class="how"><li>Lis la question. <b>Réponds à voix haute avant</b> de retourner la carte.</li><li>Note-toi honnêtement : <b>Raté</b> revient tout de suite, <b>Dur</b> demain, <b>Facile</b> dans 1, 3, 7, 14 puis 30 jours.</li><li>Reviens chaque jour sur « Réviser maintenant » : quelques minutes suffisent.</li></ul>'));
+  return w}
+function deckList(nodes,depth){const box=h('<div class="card" style="overflow:hidden"></div>');
+  (function walk(ns,d){ns.forEach(n=>{const s=stats(subIds(n));if(!s.total)return;
+    const own=cardsOf(n.id).length,kids=(n.enfants||[]).some(c=>stats(subIds(c)).total);
+    if(kids&&!own&&d===0){box.appendChild(h('<a class="deck grp" href="#'+encodeURIComponent(n.id)+'">'+esc(n.court||n.titre)+'</a>'))}
+    else{box.appendChild(h('<a class="deck'+(d>0?' sub1':'')+'" href="#'+encodeURIComponent(n.id)+'"><div class="t"><b>'+esc(n.court||n.titre)+'</b><small>'+s.total+' carte'+(s.total>1?'s':'')+(s.due?' · '+s.due+' à revoir':'')+'</small></div><div class="prog"><i style="width:'+(s.pct*100)+'%;background:'+color(s)+'"></i></div><span class="go">›</span></a>'))}
+    if(n.enfants)walk(n.enfants,d+1)})})(nodes,depth);
+  return box}
+function deckView(n){const ids=subIds(n),s=stats(ids),w=h('<div></div>');
+  const chain=[];let p=n._p;while(p){chain.unshift(p.court||p.titre);p=p._p}
+  w.appendChild(h('<p class="small muted" style="margin:0 0 6px"><a href="#">'+esc(CH.matiere)+' · Ch. '+esc(CH.numero)+'</a>'+chain.map(x=>' › '+esc(x)).join('')+'</p>'));
+  w.appendChild(h('<div><h1>'+esc(n.titre||n.court)+'</h1><p class="sub">'+s.total+' cartes · '+s.due+' à revoir · '+Math.round(s.pct*100)+' % maîtrisé</p></div>'));
+  const b=h('<div class="stack"></div>');
+  const b1=h('<button class="btn pri wide">Réviser ce paquet ('+s.due+')</button>');b1.disabled=!s.due;b1.onclick=()=>start(ids,{due:true},n.court||n.titre);
+  const b2=h('<button class="btn wide">Tout le paquet ('+s.total+')</button>');b2.disabled=!s.total;b2.onclick=()=>start(ids,{},n.court||n.titre);
+  const b3=h('<button class="btn sm" style="margin-top:14px">Copier le lien de ce paquet</button>');
+  b3.onclick=()=>{const u=location.href;const done=()=>{b3.textContent='Lien copié ✓';setTimeout(()=>b3.textContent='Copier le lien de ce paquet',1800)};
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(u).then(done,()=>prompt('Copie ce lien :',u));else prompt('Copie ce lien :',u)};
+  b.appendChild(b1);b.appendChild(b2);b.appendChild(b3);w.appendChild(b);
+  if((n.enfants||[]).some(c=>stats(subIds(c)).total)){w.appendChild(h('<h2>Dans ce paquet</h2>'));w.appendChild(deckList(n.enfants,1))}
+  return w}
+function session(){const w=h('<div></div>');
+  if(S.i>=S.q.length){const r=S.res;
+    w.appendChild(h('<div><h1>Session terminée</h1><p class="sub">'+S.n+' carte'+(S.n>1?'s':'')+(S.label?' · '+esc(S.label):'')+'</p></div>'));
+    w.appendChild(h('<div class="res"><span class="chip piege">Raté '+r.rate+'</span><span class="chip">Dur '+r.dur+'</span><span class="chip" style="color:var(--ok)">Facile '+r.facile+'</span></div>'));
+    if(!S.n)w.appendChild(h('<p class="muted">Rien à revoir dans ce paquet aujourd’hui.</p>'));
+    const b=h('<button class="btn pri wide">Retour</button>');b.onclick=()=>{S=null;render();window.scrollTo({top:0})};w.appendChild(b);return w}
+  const c=card(S.q[S.i]);if(!c){S.q.splice(S.i,1);return session()}
+  const n=node(c.s),syn=isSynth(c);
+  const top=h('<div class="top"><span>'+(S.i+1)+' / '+S.q.length+'</span><span class="sp"></span><button class="btn sm">Arrêter</button></div>');
+  top.querySelector('button').onclick=()=>{S.i=S.q.length;render()};w.appendChild(top);
+  w.appendChild(h('<div class="prog" style="margin-bottom:12px"><i style="width:'+(S.i/S.q.length*100)+'%;background:var(--accent)"></i></div>'));
+  const f=h('<div class="card flash'+(syn?' synth':'')+'"><div class="chips"><span class="chip '+esc(c.type)+'">'+esc(TYPES[c.type]||c.type)+'</span><span class="chip">'+esc(n?(n.court||n.titre):'')+'</span></div><div class="q">'+md(c.q)+'</div></div>');
+  if(syn&&!S.flip)f.appendChild(h('<div class="hint">À voix haute, sans support : tout le raisonnement de la partie, avec les exemples. Retourne seulement quand tu as fini.</div>'));
+  if(c.grille)f.appendChild(grille(c,S.grid,S.flip));
+  if(S.flip)f.appendChild(h('<div class="r">'+md(c.r)+'</div>'));
+  if(!S.flip){const b=h('<button class="btn pri wide">'+(c.grille?'Vérifier':'Voir la réponse')+' <kbd>espace</kbd></button>');b.onclick=()=>{S.flip=true;render()};f.appendChild(b)}
+  else{const x=st(c.id),nx=INTERVALS[Math.min(5,(x.box||0)+1)];
+    const g=h('<div class="grade"><button class="g1">Raté<small>tout de suite</small></button><button class="g2">Dur<small>demain</small></button><button class="g3">Facile<small>dans '+nx+' j</small></button></div>');
+    [...g.children].forEach((b,i)=>b.onclick=()=>doGrade(['rate','dur','facile'][i]));f.appendChild(g)}
+  w.appendChild(f);
+  if(!saved)w.appendChild(h('<p class="small" style="color:var(--bad);margin-top:12px">Ton navigateur bloque l’enregistrement (navigation privée ?). Tu peux réviser, mais ta progression ne sera pas gardée.</p>'));
+  return w}
+function render(){const v=$('#view');v.innerHTML='';
+  if(S){v.appendChild(session());return}
+  const id=decodeURIComponent(location.hash.slice(1)),n=id&&node(id);
+  v.appendChild(n?deckView(n):home())}
+window.addEventListener('hashchange',()=>{S=null;render();window.scrollTo({top:0})});
+const ft=$('#foot');
+ft.appendChild(h('<p>Ta progression est enregistrée <b>dans ce navigateur, sur cet appareil</b>. Personne d’autre ne la voit. Les cartes ne peuvent pas être modifiées ici.</p>'));
+const rz=h('<p><button>Remettre ma progression à zéro</button>'+(CH.maj?' · Cartes mises à jour le '+esc(CH.maj):'')+'</p>');
+rz.querySelector('button').onclick=()=>{if(confirm('Effacer ta progression sur ce chapitre ?')){P={cards:{}};ls.del(KEY);S=null;render()}};
+ft.appendChild(rz);
+render();
+})();
+</script>
+</body>
+</html>
