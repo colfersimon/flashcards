@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>SES ch. 2 · Plan béton</title>
+<style>
+:root{--bg:#f4f2ec;--card:#fff;--ink:#1a1b1f;--muted:#6a6b72;--line:#e3dfd5;--acc:#14366b;--acc2:#b8332a;--soft:#eef2f9;--ok:#1f7a4a;--hide:#dde3ee}
+@media (prefers-color-scheme:dark){:root{--bg:#111215;--card:#1b1c20;--ink:#ececef;--muted:#9a9aa3;--line:#2c2d33;--acc:#8fb0ea;--acc2:#ef7d72;--soft:#1e2635;--ok:#5fcf91;--hide:#2a3346}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+main{max-width:820px;margin:0 auto;padding:22px 16px 90px}
+header h1{font-size:24px;letter-spacing:-.02em;margin:0 0 4px;line-height:1.2}
+header p{margin:0 0 14px;color:var(--muted);font-size:14.5px}
+.bar{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0;display:flex;flex-wrap:wrap;gap:8px;border-bottom:1px solid var(--line);margin-bottom:16px}
+.seg{display:flex;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.seg button,.btn{border:0;background:none;color:var(--ink);font:inherit;font-size:14px;padding:8px 12px;cursor:pointer}
+.seg button.on{background:var(--acc);color:#fff}
+@media (prefers-color-scheme:dark){.seg button.on{color:#111}}
+.btn{background:var(--card);border:1px solid var(--line);border-radius:12px}
+.aide{font-size:13.5px;color:var(--muted);margin:-6px 0 14px}
+details{border-radius:14px}
+summary{list-style:none;cursor:pointer;display:flex;align-items:flex-start;gap:10px}
+summary::-webkit-details-marker{display:none}
+summary .chev{flex:0 0 18px;transition:transform .15s;color:var(--muted);margin-top:2px}
+details[open]>summary .chev{transform:rotate(90deg)}
+summary .tt{flex:1;min-width:0}
+.num{font-weight:800;color:var(--acc);margin-right:6px}
+/* niveaux */
+.lv0{background:var(--card);border:1px solid var(--line);margin:0 0 18px;padding:14px 14px 6px}
+.lv0>summary{font-size:19px;font-weight:800;padding-bottom:8px}
+.lv0>summary .num{color:var(--acc2)}
+.lv1{border-left:4px solid var(--acc);padding:8px 0 4px 12px;margin:10px 0}
+.lv1>summary{font-size:17px;font-weight:750}
+.lv2{border-left:3px solid var(--line);padding:6px 0 2px 12px;margin:8px 0}
+.lv2>summary{font-size:16px;font-weight:700}
+.lv3{border-left:2px dashed var(--line);padding:4px 0 2px 12px;margin:6px 0}
+.lv3>summary{font-size:15.5px;font-weight:650}
+.corps{padding:4px 0 6px 28px}
+.intro{background:var(--soft);border-radius:10px;padding:9px 12px;margin:6px 0 10px;font-style:italic}
+.arg{margin:10px 0 4px}
+.arg h4{margin:0 0 4px;font-size:15px}
+.arg h4 .an{display:inline-block;background:var(--acc);color:#fff;border-radius:6px;padding:0 7px;margin-right:6px;font-size:12.5px;font-weight:700;vertical-align:1px}
+@media (prefers-color-scheme:dark){.arg h4 .an{color:#111}}
+.arg h4 .an.lim{background:var(--acc2)}
+.arg ul{margin:2px 0 0;padding-left:20px}
+.arg li{margin:2px 0}
+.ex{color:var(--muted)}
+.ex b:first-child{color:var(--acc2)}
+.tr{margin:10px 0 4px;font-size:14.5px;color:var(--muted)}
+.tr b{color:var(--ink)}
+.sais{margin-left:8px;font-size:12px;border:1px solid var(--line);border-radius:20px;padding:1px 9px;background:var(--card);color:var(--muted);cursor:pointer;white-space:nowrap;font-weight:500}
+.sais.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:6px 0}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--soft)}
+/* mode entraînement : on cache, un tap révèle */
+.cache{position:relative;cursor:pointer}
+body.m-args .arg ul:not(.vu),
+body.m-titres .corps:not(.vu)>*:not(details):not(.voir){display:none}
+body.m-titres .corps:not(.vu)>details{display:none}
+.voir{display:none}
+body.m-args .arg ul:not(.vu)+.voir,
+body.m-titres .corps:not(.vu)>.voir{display:block;background:var(--hide);border-radius:10px;padding:8px 12px;margin:6px 0;color:var(--muted);font-size:14px;cursor:pointer;border:1px dashed var(--line)}
+.score{font-size:13.5px;color:var(--muted);align-self:center;margin-left:auto}
+@media (max-width:560px){.corps{padding-left:10px}.lv1,.lv2,.lv3{padding-left:9px}.seg button,.btn{padding:7px 9px;font-size:13px}}
+</style>
+</head>
+<body>
+<main>
+<header>
+<h1>Comment est structurée la société française actuelle ?</h1>
+<p>Tout le chapitre en plan détaillé béton. Chaque partie a sa phrase rédigée, puis ses arguments, ses bullets et ses exemples. Contenu : ton cahier et le poly (fiche du 04/11).</p>
+</header>
+<div class="bar">
+  <div class="seg" id="modes">
+    <button data-m="lire" class="on">Lire</button>
+    <button data-m="args">Cacher les bullets</button>
+    <button data-m="titres">Cacher tout sauf titres</button>
+  </div>
+  <button class="btn" id="ouvrir">Tout déplier</button>
+  <button class="btn" id="fermer">Tout replier</button>
+  <span class="score" id="score"></span>
+</div>
+<p class="aide" id="aide">Mode Lire : tout est visible. Clique un titre pour déplier ou replier.</p>
+<div id="plan"></div>
+</main>
+<script>
+// Schéma d'un nœud : n = numéro, t = titre, i = phrase rédigée, a = arguments [titre, [bullets], "lim" si limite], k = sous-parties, tr = transition
+const PLAN = [
+{n:"", t:"La trame : le chapitre en 8 lignes", id:"trame",
+ i:"Je décris la société (Partie 1), je cherche l'outil pour l'analyser (Marx, Weber), je teste si cet outil marche encore aujourd'hui (le débat).",
+ a:[["Les 8 lignes",[
+  "**Question :** comment est rangée la société française ?",
+  "**P1, la photo :** on range selon plusieurs critères. Profession et diplôme d'abord, puis sexe, âge, lieu, ménage. Et ils se cumulent.",
+  "**P1, le film :** depuis 1950, 4 mutations. Salarisation, tertiarisation, qualification, féminisation.",
+  "**P2, le problème :** ces groupes sont-ils de vraies classes ? Deux outils : Marx (1 critère, la lutte) et Weber (3 critères).",
+  "**Contre, objectivement :** entre les classes, la société se moyennise (Mendras). Dans les classes, le bloc se coupe en deux.",
+  "**Contre, subjectivement :** on se place mal, on s'individualise. Plus de conscience, plus de lutte.",
+  "**Pour :** les classes populaires partagent une condition commune. La grande bourgeoisie est en soi et pour soi.",
+  "**Verdict :** frontières floues, inégalités multiples. Les classes ne disparaissent pas, mais elles ne disent plus tout."]]]},
+
+{n:"Partie 1", t:"Comment caractériser la structure sociale française ?", id:"p1",
+ i:"Avant d'analyser la société, il faut la décrire : qui occupe quelle place, et selon quels critères. On prend d'abord une photo de la société française, puis on regarde le film de ses transformations depuis 1950.",
+ k:[
+ {n:"Intro", t:"Quels critères pour le portrait d'un individu ?", id:"p1-intro",
+  i:"Quelques critères suffisent pour situer un individu dans la société, comme le montre le portrait d'Hervé.",
+  a:[["Un portrait avec quelques critères",[
+     "**Hervé** (Renahy, *Les gars du coin*, 2010).",
+     "Ouvrier, CAP, homme, jeune, fils d'ouvrier, vit dans son village.",
+     "**Donc :** il appartient aux classes populaires."]],
+     ["Deux façons de représenter la société",[
+     "**Espace social :** représentation où les **individus** sont positionnés selon leurs caractéristiques.",
+     "**Structure sociale :** représentation où les **groupes** sociaux sont **différenciés et hiérarchisés**."]]],
+  tr:"Quels sont ces critères ?"},
+ {n:"I.", t:"Des facteurs multiples de structuration et de hiérarchisation de l'espace social", id:"p1-I",
+  i:"La place de chacun dépend de plusieurs critères : la profession et le diplôme d'abord, mais aussi le sexe, l'âge, le lieu de vie et la composition du ménage. Et ces critères s'additionnent.",
+  k:[
+  {n:"A.", t:"Les PCS, un outil pour faire apparaître des groupes homogènes et différenciés", id:"p1-IA",
+   i:"Pour faire apparaître des groupes qui se ressemblent, l'Insee range les actifs dans une nomenclature : les PCS.",
+   a:[["Un outil de l'Insee",[
+      "CSP en 1954, PCS en 1982.",
+      "**6 groupes :** agriculteurs, artisans-commerçants-chefs d'entreprise, cadres, professions intermédiaires, employés, ouvriers."]],
+     ["Des critères précis",[
+      "Statut, secteur, taille, public ou privé, qualification, hiérarchie.",
+      "**Piège :** le salaire n'est PAS un critère."]],
+     ["Des groupes homogènes",[
+      "Homogénéité sociale : mêmes comportements de consommation, de mode, de vote."]]]},
+  {n:"B.", t:"Des inégalités selon la PCS et le diplôme", id:"p1-IB",
+   i:"La profession et le diplôme ne font pas que ranger : ils hiérarchisent. Ils décident du salaire, de l'emploi, et même de la durée de vie.",
+   a:[["Le diplôme fait le salaire",[
+      "**Mécanisme :** diplôme élevé → qualification → capital humain → productivité → salaire élevé."]],
+     ["Le diplôme protège du chômage",[
+      "Jeunes sortis de l'école en 2013, sans diplôme : **49 %** de chômage.",
+      "Et seulement **34 %** en CDI parmi ceux qui ont un emploi.",
+      "Écoles de commerce et d'ingénieurs : **90 %** en CDI (Céreq, génération 2013)."]],
+     ["Jusqu'à la santé",[
+      "Homme cadre : **84 ans**. Homme ouvrier : **77 ans**.",
+      "**Pourquoi :** pratiques à risque, accès aux soins, risques du travail."]]],
+   tr:"La profession ne suffit pas à tout expliquer."},
+  {n:"C.", t:"De multiples autres facteurs", id:"p1-IC",
+   i:"À profession égale, d'autres critères hiérarchisent les individus. Et ces critères s'additionnent.",
+   a:[["Le sexe",[
+      "Écart de revenu salarial : **24 %**, dont **9,9 %** à conditions équivalentes (discrimination).",
+      "**Cause 1, la socialisation genrée :** les « choix » sont construits. Filles dans des filières moins payées, autocensure.",
+      "**Exemple :** Baudelot et Establet, *Allez les filles !* : meilleures à l'école, moins bien payées ensuite.",
+      "**Cause 2, le travail domestique :** moins d'heures sup, plus de temps partiel, moins de promotions.",
+      "**Plafond de verre :** 90 % des hauts dirigeants sont des hommes."]],
+     ["L'âge",[
+      "**Modigliani, le cycle de vie :** jeune, on s'endette. Actif, on épargne. Retraité, on désépargne.",
+      "**Chiffre :** patrimoine moyen de 69 900 € avant 30 ans, 337 500 € à 50-59 ans (Insee 2018).",
+      "**Cumulatif :** le revenu fait le patrimoine, le patrimoine fait du revenu."]],
+     ["Le lieu de résidence",[
+      "**Ségrégation résidentielle :** le prix du logement trie les ménages.",
+      "**Oberti :** les quartiers diffèrent par leurs habitants et leurs équipements. Mieux dotés, ils attirent les favorisés : l'**entre-soi**.",
+      "**Maurin, *Le ghetto français* :** chacun évite le groupe juste en dessous."]],
+     ["La composition du ménage",[
+      "**Mécanisme :** niveau de vie = revenu disponible / unités de consommation. À revenu égal, plus on est nombreux, plus on est bas.",
+      "**Exemple :** familles monoparentales, un seul salaire, et 84 % ont une femme à leur tête."]],
+     ["Ces facteurs se cumulent",[
+      "**Chômage :** femmes en famille monoparentale, environ 2 fois plus au chômage que les femmes en couple avec enfants.",
+      "**Bourdieu, *L'amour de l'art* :** même gratuit, le musée n'attire pas les pauvres. Ce n'est pas l'argent, c'est le **capital culturel**.",
+      "**3 formes :** objectivé (livres), institutionnalisé (diplôme), incorporé (façon de parler).",
+      "**Habitus :** les dispositions propres à une classe."]]],
+   tr:"Voilà la photo. Mais elle bouge depuis 1950."}]},
+ {n:"II.", t:"Les évolutions de la structure socioprofessionnelle depuis 1950", id:"p1-II",
+  i:"Cette photo n'est pas figée. Depuis 1950, quatre mutations transforment la structure : la société devient plus salariée, plus tertiaire, plus qualifiée et plus féminisée.",
+  a:[["Salarisation",[
+     "56 % d'emplois salariés début XXe, **90 %** en 2010.",
+     "**Pourquoi :** les indépendants reculent. Concurrence des prix bas, mécanisation agricole, grandes surfaces.",
+     "**Exemple :** Ikea contre le marchand de meubles."]],
+    ["Tertiarisation",[
+     "Le tertiaire passe d'environ **38 %** (1954) à **80 %** (2024). Le primaire de 28 % à 2 %.",
+     "**Pourquoi :** progrès technique et délocalisations côté agriculture et usines. Vieillissement et hausse des loisirs côté services."]],
+    ["Élévation de la qualification",[
+     "Cadres de **2 à 6,7 millions** (+235 %, 1984-2024).",
+     "**Pourquoi :** massification scolaire (80 % au bac), progrès technique, désindustrialisation."]],
+    ["Limite : la polarisation",[
+     "Ouvriers peu qualifiés : 2,9 → 0,6 M. Mais employés peu qualifiés : 2,3 → 3,2 M.",
+     "L'emploi peu qualifié ne disparaît pas, il passe dans les services."],"lim"],
+    ["Féminisation",[
+     "**48 %** des emplois occupés par des femmes en 2018.",
+     "**Pourquoi :** tertiarisation (soin, éducation), normes qui changent, droit (1965), maîtrise du corps (Neuwirth 1967, IVG 1975), divorce (1975)."]]],
+  tr:"On sait décrire la structure. Reste à savoir comment l'analyser."}]},
+
+{n:"Partie 2", t:"Comment analyser la structure de la société ?", id:"p2",
+ i:"Décrire ne suffit pas : il faut un outil pour analyser. La sociologie du XIXe en propose deux, les classes de Marx et de Weber. Reste à tester si cet outil marche encore dans la France d'aujourd'hui.",
+ k:[
+ {n:"I.", t:"Les analyses traditionnelles de la structure sociale", id:"p2-I",
+  i:"La sociologie naît au XIXe siècle pour comprendre une société bouleversée. Deux théories des classes sociales s'y opposent : celle de Marx et celle de Weber.",
+  k:[
+  {n:"Contexte", t:"Pourquoi la sociologie naît au XIXe", id:"p2-I0",
+   i:"La société explose sous l'effet de trois révolutions. La sociologie arrive pour la comprendre.",
+   a:[["3 révolutions",[
+      "**Politique** (1789), **économique** (l'usine, fin des corporations en 1791), **spirituelle** (la science remplace Dieu)."]],
+     ["La condition ouvrière",[
+      "L'ouvrier du XIXe : exploité, mal payé, entassé en ville.",
+      "**Accroches :** Hugo, *Melancholia*. Zola, *Germinal*."]],
+     ["Durkheim, 1893",[
+      "On passe de la solidarité **mécanique** (similarité) à la solidarité **organique** (complémentarité).",
+      "L'individualisme émerge."]]]},
+  {n:"A.", t:"La théorie des classes sociales de Marx", id:"p2-IA",
+   i:"Pour Marx, la société est coupée en deux par la propriété des moyens de production. Et les classes se forment dans la lutte.",
+   a:[["Un critère économique",[
+      "La place dans le processus de production. Le capitaliste possède, l'ouvrier vend sa force de travail.",
+      "**Exploitation :** le salarié est payé moins que ce qu'il crée. La différence = **plus-value**."]],
+     ["Une approche réaliste",[
+      "Les classes existent déjà, le sociologue les met en lumière."]],
+     ["Classe en soi, classe pour soi",[
+      "**En soi :** même position, réalité objective.",
+      "**Pour soi :** conscience d'intérêts communs, et volonté de se mobiliser.",
+      "**Exemple :** les paysans parcellaires. Isolés, classe en soi mais pas pour soi. Des « pommes de terre dans un sac »."]],
+     ["La lutte des classes",[
+      "Lutte = conscience. Sans mobilisation, pas de classe.",
+      "Bourgeoisie contre ouvriers : des intérêts antagonistes.",
+      "**Les 4 mots :** critère économique, réaliste, en soi / pour soi, lutte."]]]},
+  {n:"B.", t:"La théorie des classes sociales de Weber", id:"p2-IB",
+   i:"Pour Weber, un seul critère ne suffit pas : on peut être haut sur un plan et bas sur un autre.",
+   a:[["Trois ordres",[
+      "**Économique :** les classes sociales (revenu, patrimoine, position).",
+      "**Social :** les groupes de statut (prestige). **Exemple :** le bal des débutantes.",
+      "**Politique :** les partis (accès au pouvoir)."]],
+     ["Indépendants mais corrélés",[
+      "Être riche donne souvent prestige et pouvoir, pas toujours."]],
+     ["Marx contre Weber",[
+      "**Critères :** Marx 1 (unidimensionnel). Weber 3 (multidimensionnel).",
+      "**Les classes :** Marx réaliste, elles existent. Weber nominaliste, le sociologue les construit.",
+      "**Rapport :** Marx domination et lutte. Weber pas de rapport de domination."]]],
+   tr:"Ces théories datent du XIXe. Marchent-elles encore ?"}]},
+ {n:"II.", t:"Les classes sociales : une notion en débat", id:"p2-II",
+  i:"Aujourd'hui, la notion de classe fait débat. Plusieurs signes laissent penser que les classes disparaissent, d'autres montrent qu'elles résistent, et le verdict est plus nuancé.",
+  a:[["Définition à poser",[
+     "**Classe sociale :** ensemble d'individus qui occupent une position similaire dans l'ordre socio-économique et partagent des intérêts communs."]]],
+  k:[
+  {n:"A.", t:"La fin des classes sociales ?", id:"p2-IIA",
+   i:"Plusieurs évolutions laissent penser que les classes s'effacent : objectivement, leurs frontières se brouillent ; subjectivement, les individus ne s'y reconnaissent plus.",
+   k:[
+   {n:"1.", t:"L'évolution des distances inter et intra-classes brouille les frontières", id:"p2-IIA1",
+    i:"Entre les classes, les écarts se réduisent ; à l'intérieur d'une même classe, ils se creusent. Les frontières deviennent floues.",
+    a:[["Vocabulaire",["**Inter** = entre les classes. **Intra** = dans une classe. Ta page ㉑ les inverse."],"lim"]],
+    k:[
+    {n:"a.", t:"Inter-classe : la société se moyennise", id:"p2-IIA1a",
+     i:"Depuis les Trente Glorieuses, les distances entre les classes s'amenuisent.",
+     a:[["Mendras et la toupie (1988)",[
+        "Plus une pyramide, une toupie.",
+        "Élite 3 %, pauvres 7 %, et un gros milieu : constellation populaire 50 %, constellation centrale 25 %.",
+        "**Contre Marx :** plus d'antagonisme à deux."]],
+       ["L'homogénéisation des modes de vie",[
+        "La consommation de masse rapproche tout le monde.",
+        "**Exemple :** lave-vaisselle, environ 20 % en 1980, environ 60 % en 2012. L'objet ne distingue plus."]],
+       ["La baisse des inégalités de revenus",[
+        "Rapport D9/D1 : de **4,6** en 1970 à **3,6** en 2010."]]]},
+    {n:"b.", t:"Intra-classe : les distances augmentent dans une même classe", id:"p2-IIA1b",
+     i:"Les individus d'une classe ne forment plus un ensemble homogène : les non-qualifiés se détachent des qualifiés, au point de former peut-être une nouvelle classe (Amossé et Chardon).",
+     a:[["La précarité",[
+        "CDD, temps partiel subi, intérim.",
+        "Chômage des ouvriers non qualifiés **17,8 %** contre **9,6 %** pour les qualifiés (Insee 2018), environ 1,9 fois plus."]],
+       ["Le travail",[
+        "Travail répétitif, « OS du tertiaire » (caissières), horaires décalés."]],
+       ["Le salaire",[
+        "35 % de moins pour les employés non qualifiés que pour les qualifiés en 2002, comme en 1990 (37 %). Le fossé ne se referme pas."]],
+       ["Liens et exemples",[
+        "**Lien Marx :** classe en soi, mais isolés, donc pas pour soi. Comme les paysans parcellaires.",
+        "**Lien Partie 1 :** c'est la polarisation de l'emploi.",
+        "**Exemple :** agent immobilier et livreur Uber, même groupe, conditions de vie différentes.",
+        "**Exemple :** employé contre femme de ménage : travail, revenu, statut de l'emploi.",
+        "**Conclusion :** trop d'hétérogénéité pour parler de classe sociale."]]]}]},
+   {n:"2.", t:"Un affaiblissement de l'identification subjective aux classes sociales", id:"p2-IIA2",
+    i:"Objectivement, les classes se brouillent ; subjectivement, les individus ne se sentent plus d'une classe. Or sans conscience, pas de classe pour soi.",
+    a:[["On se place mal",[
+       "**55 %** des individus pensent appartenir à la classe moyenne.",
+       "Ils se trompent : ils se positionnent mal dans la hiérarchie.",
+       "**Exemple :** agent immobilier parisien et agriculteur breton, tous deux « classe moyenne ». Objectivement, c'est faux."]],
+      ["Une double erreur",[
+       "**68 %** des CSP+ se déclassent.",
+       "Des CSP− se sur-classent : **30 %** des individus du 1er décile, et **45 %** des employés se croient dans les classes moyennes.",
+       "**Pourquoi les CSP+ :** on se compare à son entourage, ils ne voient jamais la précarité. Et certains cadres se déclassent vraiment (profs, médecins).",
+       "**Pourquoi les ouvriers :** comparés aux générations d'avant, illusion d'élévation. Et être bas dans la hiérarchie a un coût psychologique."]],
+      ["Donc plus de classe pour soi",[
+       "**Lien Marx :** plus d'intérêt commun, plus de prise de conscience, plus de mobilisation.",
+       "**Avant :** paysan, noble, clergé, facilement distinguables. « Bonjour, je suis André et je suis ouvrier » : la profession, 2e chose la plus importante.",
+       "**Conséquence :** on ne se mobilise plus ensemble. **Exemple :** les Gilets jaunes, des intérêts pas communs."]]]},
+   {n:"3.", t:"Une montée de l'individualisation qui remet en cause les classes sociales", id:"p2-IIA3",
+    i:"Chacun cherche à être unique. Les intérêts communs reculent, et avec eux la conscience et la mobilisation.",
+    a:[["Des identités qui se fragmentent",[
+       "**Avant :** en 1950, des groupes ouvriers solides. Tout seul, c'est plus dur.",
+       "**Définition :** identités plus complexes, plus de mal à se percevoir membre d'un groupe. « Ce que j'aime » compte plus que sa place.",
+       "**La chaîne :** plusieurs petits groupes → intérêts différents → pas de conscience → pas de mobilisation."]],
+      ["Au travail : Linhart",[
+       "Après mai 1968, le patronat apeuré met en place un système individualisant.",
+       "Ouvriers en compétition, horaires variables, polyvalence, entretien individuel, évaluation.",
+       "Moins de collectifs, donc isolement. Syndicats et classes fragilisés.",
+       "**Exemple à l'école :** réforme Blanquer 2019-2020, des filières aux spés. Profs en compétition, inégalités de genre et de classe en hausse."]],
+      ["La précarité subjective",[
+       "Même avec un emploi stable : peur et insécurité.",
+       "Restructuration permanente, changer de ville ou de pays tous les 3-4 ans. Plus de repères, donc docile.",
+       "**Exemple :** conseillers bancaires, pas plus de 5 ans au même poste, pour ne pas créer de lien.",
+       "**Castel :** la « déstabilisation des stables »."]],
+      ["L'individualisation des inégalités",[
+       "Avant, vécues collectivement. Aujourd'hui, individuellement.",
+       "On s'auto-responsabilise : l'échec devient une faute personnelle, pas un fait social."]],
+      ["Limites",[
+       "Médecins, enseignants : fort sentiment d'appartenance, mais à leur métier. **Profession ≠ classe sociale.**",
+       "**Durkheim :** la profession intègre l'individu à la société.",
+       "Ton prof : Linhart est un peu trop marxiste, exagéré.",
+       "**Jounin (BTP) :** la pause repas à plusieurs montre que du collectif reste possible."],"lim"]],
+    tr:"Les classes semblent s'effacer, objectivement et subjectivement. Ont-elles vraiment disparu ?"}]},
+  {n:"B.", t:"Des classes sociales qui résistent", id:"p2-IIB",
+   i:"Objectivement, les écarts restent ; subjectivement, au moins un groupe reste une vraie classe au sens de Marx.",
+   k:[
+   {n:"1.", t:"Objectivement : les classes existent encore, les classes populaires", id:"p2-IIB1",
+    i:"Ouvriers et employés sont divers, mais ils partagent une condition commune.",
+    a:[["De la classe ouvrière aux classes populaires",[
+       "**Auteurs :** Peugny. Chauvel, *Le retour des classes sociales* (2001).",
+       "**Renahy et alii, 2015 :** on passe de « la classe ouvrière » aux **classes populaires**, au pluriel."]],
+      ["Des écarts qui restent",[
+       "Les écarts entre ouvriers et employés sont toujours plus petits que ceux qui les séparent des classes moyennes et supérieures.",
+       "Et ces inégalités s'accentuent depuis les années 1980."]],
+      ["Une condition commune",[
+       "Bas salaires, patrimoine très faible, travail usant et subordonné, faible mobilité, forte homogamie.",
+       "**Chiffres :** 1 ménage sur 5 est formé d'un ouvrier et d'une employée. 40 % des couples sont composés d'ouvriers, d'employés ou d'inactifs."]],
+      ["Limite",[
+       "Définition moins exigeante que celle de Marx : condition similaire, oui. Forte conscience de classe, non."],"lim"]],
+    tr:"Une condition commune ne fait pas une classe pour soi. Existe-t-il encore une classe consciente d'elle-même ?"},
+   {n:"2.", t:"Subjectivement : la grande bourgeoisie, classe en soi et pour soi", id:"p2-IIB2",
+    i:"Marx marche encore, mais en haut : la grande bourgeoisie est la classe la plus consciente d'elle-même.",
+    a:[["Une classe en soi",[
+       "**Auteurs :** Pinçon et Pinçon-Charlot, *Les ghettos du gotha* (2007).",
+       "Détient les moyens de production, fort capital économique, social, culturel et symbolique.",
+       "**2 capitaux hérités :** **patrimonial** (argent, culture, relations, le nom) et **mondain** (les qualités de la personne, mises en commun dans le groupe)."]],
+      ["Une classe pour soi",[
+       "Conscience de ses intérêts, défense solidaire.",
+       "Organisation : cercles, associations, syndicats patronaux."]],
+      ["L'entre-soi et la distinction",[
+       "Mêmes quartiers, cercles par cooptation, mêmes écoles, rallyes. Donc **homogamie**.",
+       "**Distinction :** stratégies conscientes de différenciation. **Exemple :** l'école (filière, privé, écoles de commerce).",
+       "**Bourdieu :** chaque classe se définit par sa dotation en capital économique et culturel.",
+       "**Conclusion :** le concept de classe n'est pas obsolète."]]],
+    tr:"Les classes résistent. Mais suffisent-elles à décrire toute la société ?"}]},
+  {n:"C.", t:"Des frontières de classes brouillées et des critères de hiérarchisation multiples", id:"p2-IIC",
+   i:"La société n'est plus faite de deux blocs, et la classe n'est qu'une lecture des inégalités parmi d'autres.",
+   k:[
+   {n:"1.", t:"Une vaste classe moyenne aux contours flous", id:"p2-IIC1",
+    i:"Le milieu de la société grossit, mais il ne forme pas un groupe homogène.",
+    a:[["Chauvel, *Les classes moyennes à la dérive* (2006)",[
+       "2 dimensions, comme Bourdieu : le **volume** du capital et sa **structure** (économique ou culturel)."]],
+      ["Anciennes et nouvelles classes moyennes",[
+       "**Anciennes :** indépendants, plus de capital économique.",
+       "**Nouvelles :** salariés, plus de capital culturel."]],
+      ["Des classes moyennes hétérogènes",[
+       "Au moins 4 groupes, habitudes et idées différentes. D'où le pluriel.",
+       "**Bilan :** distances **inter** en baisse (scolarisation, consommation de masse), distances **intra** en hausse."]]]},
+   {n:"2.", t:"D'autres clivages à l'origine des hiérarchies sociales", id:"p2-IIC2",
+    i:"Certaines inégalités traversent les classes : elles ne se lisent pas sur l'échelle des classes.",
+    a:[["Le genre",[
+       "Le masculin et le féminin s'apprennent : ce sont des rôles appris.",
+       "Les inégalités femmes-hommes traversent les classes : inégalités **intra-classe**.",
+       "**Chiffres :** 30,4 % des femmes à temps partiel, 7,9 % des hommes (2015). Près de 39 % de députées en 2017. **Plafond de verre.**",
+       "« Les classes populaires deviennent plurielles »."]],
+      ["L'origine",[
+       "À diplôme égal, le chômage des immigrés est plus élevé (Insee 2016)."]],
+      ["L'âge",[
+       "Jeunes plus touchés par le chômage et la précarité : « fracture générationnelle »."]],
+      ["Effet sur la conscience de classe",[
+       "**Exemple :** une jeune caissière marocaine et un ouvrier âgé non immigré se sentent mal du même groupe.",
+       "Plus d'appartenances (religion, origine, genre), moins de conscience de classe.",
+       "**Marché du travail :** CDI ou CDD, temps plein ou partiel, primes. Encore de l'individualisation.",
+       "**Nouvelle génération (page ㉛) :** genre, ethnie, engagement militant comptent plus que la classe."]]],
+    tr:"**Verdict :** les inégalités sont multiples. Ces clivages « complexifient la lecture » de la société plus qu'ils ne font disparaître les classes."}]}]}]},
+
+{n:"Bonus", t:"Le test de Marx et les ponts entre les parties", id:"bonus",
+ i:"Le fil rouge de toute la Partie 2 : chaque groupe passe le test en soi / pour soi. Et une dissertation sur les classes réutilise la Partie 1.",
+ a:[["Le test de Marx, groupe par groupe (ma synthèse, pas un tableau du prof)",[
+    "**Paysans parcellaires :** en soi oui. Pour soi non, isolés.",
+    "**Non-qualifiés :** en soi oui. Pour soi non, isolés.",
+    "**Classes populaires :** en soi oui, condition commune. Pour soi faible.",
+    "**Classes moyennes :** en soi non, hétérogènes. Pour soi non, intérêts pas communs.",
+    "**Grande bourgeoisie :** en soi oui. Pour soi **OUI**."]],
+   ["Les ponts",[
+    "**Polarisation** (P1, II) → les non-qualifiés (P2, II.A.1.b).",
+    "**Sexe, âge, lieu** (P1, I.C) → d'autres clivages (P2, II.C.2).",
+    "**Capital culturel, Bourdieu** (P1, I.C) → grande bourgeoisie et classes moyennes (P2, II.B.2 et II.C.1).",
+    "**Entre-soi, Oberti** (P1, I.C) → l'entre-soi bourgeois (P2, II.B.2).",
+    "**Marx en soi / pour soi** (P2, I.A) → le fil rouge de tout le II."]],
+   ["Le kit intro",[
+    "**Accroches :** Hervé (Renahy). *Germinal*, Zola. *Melancholia*, Hugo. Le bal des débutantes. Les rallyes. Les Gilets jaunes. Les 7 ans d'écart entre cadres et ouvriers.",
+    "**Mots à définir :** structure sociale, espace social, classe sociale, PCS.",
+    "**Tension :** la société paraît moyennisée et individualisée, mais les inégalités restent.",
+    "**Réponse :** les classes ne disparaissent pas, mais elles ne disent plus tout."]]]}
+];
+
+const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;");
+const fmt = s => esc(s).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/\*(.+?)\*/g,"<i>$1</i>");
+let SAIS = {};
+try { SAIS = JSON.parse(localStorage.getItem("ses2-sais") || "{}"); } catch(e) {}
+const garder = () => { try { localStorage.setItem("ses2-sais", JSON.stringify(SAIS)); } catch(e) {} };
+let feuilles = [];
+
+function rendre(n, lv){
+  const d = document.createElement("details");
+  d.className = "lv" + Math.min(lv,3);
+  if (lv < 2) d.open = true;
+  const feuille = !n.k;
+  if (feuille) feuilles.push(n.id);
+  d.innerHTML = `<summary><span class="chev">▸</span><span class="tt">${n.n?`<span class="num">${esc(n.n)}</span>`:""}${fmt(n.t)}${feuille?`<button class="sais${SAIS[n.id]?" ok":""}" data-id="${n.id}">${SAIS[n.id]?"✓ je sais":"je sais ?"}</button>`:""}</span></summary>`;
+  const c = document.createElement("div"); c.className = "corps";
+  let h = "";
+  if (n.i) h += `<div class="intro">${fmt(n.i)}</div>`;
+  (n.a||[]).forEach((a,j) => {
+    const lim = a[2]==="lim";
+    const num = lim ? "Limite" : "Arg " + ((n.a.slice(0,j).filter(x=>x[2]!=="lim").length)+1);
+    h += `<div class="arg"><h4><span class="an${lim?" lim":""}">${num}</span>${fmt(a[0])}</h4><ul>${a[1].map(b=>`<li class="${b.startsWith("**Exemple")?"ex":""}">${fmt(b)}</li>`).join("")}</ul><div class="voir">Récite les bullets dans ta tête, puis tape pour vérifier</div></div>`;
+  });
+  c.innerHTML = h + `<div class="voir">Récite la phrase et les arguments, puis tape pour vérifier</div>`;
+  (n.k||[]).forEach(k => c.appendChild(rendre(k, lv+1)));
+  if (n.tr) { const t = document.createElement("div"); t.className="tr"; t.innerHTML = "→ <b>Transition :</b> " + fmt(n.tr); c.appendChild(t); }
+  d.appendChild(c);
+  return d;
+}
+const plan = document.getElementById("plan");
+PLAN.forEach(n => plan.appendChild(rendre(n,0)));
+
+function score(){
+  const ok = feuilles.filter(id=>SAIS[id]).length;
+  document.getElementById("score").textContent = `${ok} / ${feuilles.length} parties sues`;
+}
+score();
+
+plan.addEventListener("click", e => {
+  const b = e.target.closest(".sais");
+  if (b){ e.preventDefault(); e.stopPropagation();
+    const id=b.dataset.id; SAIS[id]=!SAIS[id]; if(!SAIS[id]) delete SAIS[id]; garder();
+    b.classList.toggle("ok",!!SAIS[id]); b.textContent = SAIS[id]?"✓ je sais":"je sais ?"; score(); return; }
+  const v = e.target.closest(".voir");
+  if (v){ const cible = v.previousElementSibling && v.previousElementSibling.tagName==="UL" ? v.previousElementSibling : v.parentElement; cible.classList.add("vu"); }
+});
+
+const AIDE = {
+  lire:"Mode Lire : tout est visible. Clique un titre pour déplier ou replier.",
+  args:"Mode Bullets cachés : tu vois les phrases et les titres d'arguments. Récite les bullets, puis tape la case grise pour vérifier.",
+  titres:"Mode Titres : tu ne vois que les titres. Récite la phrase rédigée et les arguments, puis tape la case grise. Coche « je sais » quand c'est bon."
+};
+document.getElementById("modes").addEventListener("click", e => {
+  const b = e.target.closest("button"); if(!b) return;
+  document.querySelectorAll("#modes button").forEach(x=>x.classList.toggle("on",x===b));
+  document.body.className = b.dataset.m==="lire" ? "" : "m-"+b.dataset.m;
+  document.querySelectorAll(".vu").forEach(x=>x.classList.remove("vu"));
+  document.getElementById("aide").textContent = AIDE[b.dataset.m];
+});
+document.getElementById("ouvrir").onclick = () => document.querySelectorAll("details").forEach(d=>d.open=true);
+document.getElementById("fermer").onclick = () => document.querySelectorAll("details").forEach(d=>d.open=false);
+</script>
+</body>
+</html>
