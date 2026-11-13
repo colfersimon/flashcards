@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Flashcards</title>
+<style>
+:root{
+  --bg:#f6f5f1;--card:#fff;--ink:#1b1b1d;--muted:#6b6b70;--line:#e6e3dc;--soft:#efece5;
+  --accent:#b8332a;--ok:#2f8f5b;--warn:#c98612;--bad:#c23b2e;
+  --r:16px;--sh:0 1px 2px rgba(0,0,0,.04),0 12px 32px -20px rgba(0,0,0,.28);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121214;--card:#1c1c1f;--ink:#ececef;--muted:#9a9aa2;--line:#2c2c31;--soft:#25252a;--sh:0 1px 2px rgba(0,0,0,.5)}}
+:root[data-theme="dark"]{--bg:#121214;--card:#1c1c1f;--ink:#ececef;--muted:#9a9aa2;--line:#2c2c31;--soft:#25252a;--sh:0 1px 2px rgba(0,0,0,.5)}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%}
+button{font:inherit;color:inherit;-webkit-tap-highlight-color:transparent}
+a{color:inherit}
+header{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.bar{max-width:720px;margin:0 auto;padding:10px 18px;display:flex;align-items:center;gap:10px}
+.brand{display:flex;align-items:center;gap:8px;font-weight:700;letter-spacing:-.01em;text-decoration:none;min-width:0}
+.brand i{width:10px;height:10px;border-radius:50%;background:var(--accent);flex:0 0 10px}
+.brand span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sp{flex:1}
+.ib{border:1px solid var(--line);background:var(--card);border-radius:10px;height:34px;min-width:34px;padding:0 10px;cursor:pointer;font-size:14px}
+main{max-width:720px;margin:0 auto;padding:22px 18px 28px}
+h1{font-size:25px;line-height:1.2;margin:0 0 6px;letter-spacing:-.02em}
+h2{font-size:15px;margin:28px 0 10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.sub{color:var(--muted);margin:0 0 18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh)}
+.pad{padding:16px 18px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line);background:var(--card);padding:12px 16px;border-radius:12px;cursor:pointer;font-weight:600;text-decoration:none}
+.btn:hover{border-color:var(--ink)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.wide{width:100%}
+.btn:disabled{opacity:.4;cursor:default}
+.btn.sm{padding:7px 12px;font-size:14px;border-radius:10px}
+.stack>*+*{margin-top:10px}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}
+.kpi{padding:12px 14px}.kpi b{display:block;font-size:24px;letter-spacing:-.02em;line-height:1.1}.kpi span{font-size:13px;color:var(--muted)}
+.how{font-size:14.5px;color:var(--muted);padding-left:18px;margin:0}.how li+li{margin-top:4px}
+.prog{height:6px;background:var(--soft);border-radius:99px;overflow:hidden}.prog i{display:block;height:100%;border-radius:99px;background:var(--ok)}
+.deck{display:flex;align-items:center;gap:12px;padding:13px 16px;border-top:1px solid var(--line);text-decoration:none}
+.deck:first-child{border-top:0}
+.deck:hover{background:var(--soft)}
+.deck .t{flex:1;min-width:0}
+.deck .t b{display:block;font-weight:600}
+.deck .t small{color:var(--muted);font-size:13px}
+.deck .prog{width:70px;flex:0 0 70px}
+.deck .go{color:var(--muted);font-size:18px}
+.deck.grp{background:var(--soft);font-size:13px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:9px 16px}
+.deck.grp:hover{background:var(--soft)}
+.deck.sub1{padding-left:30px}
+.top{display:flex;align-items:center;gap:10px;margin-bottom:10px;color:var(--muted);font-size:14px}
+.flash{padding:22px 20px;min-height:320px;display:flex;flex-direction:column;gap:16px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.chip{font-size:12px;font-weight:600;padding:3px 9px;border-radius:99px;background:var(--soft);color:var(--muted)}
+.chip.piege{background:color-mix(in srgb,var(--bad) 14%,transparent);color:var(--bad)}
+.chip.synthese{background:var(--ink);color:var(--bg)}
+.q{font-size:23px;line-height:1.35;font-weight:650;letter-spacing:-.01em}
+.r{font-size:18px;line-height:1.55;padding-top:16px;border-top:1px dashed var(--line)}
+.hint{font-size:14px;color:var(--muted)}
+.flash.synth{border:2px solid var(--ink)}
+.grade{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.grade button{padding:14px 6px;border-radius:12px;border:1px solid var(--line);background:var(--card);cursor:pointer;font-weight:700;font-size:16px}
+.grade button small{display:block;font-weight:500;color:var(--muted);font-size:12px;margin-top:2px}
+.grade .g1{color:var(--bad)}.grade .g2{color:var(--warn)}.grade .g3{color:var(--ok)}
+.unsure{display:inline-block;background:var(--warn);color:#fff;font-size:11px;font-weight:700;padding:0 6px;border-radius:6px;vertical-align:2px}
+.gwrap{overflow-x:auto}
+table.gx{width:100%;border-collapse:collapse;font-size:15px;min-width:380px}
+table.gx th{font-size:12px;color:var(--muted);padding:6px;border-bottom:1px solid var(--line);text-align:center}
+table.gx th:first-child{text-align:left}
+table.gx td{padding:9px 6px;border-bottom:1px solid var(--line)}
+table.gx td.c{text-align:center;width:90px}
+table.gx tr.ok td{background:color-mix(in srgb,var(--ok) 12%,transparent)}
+table.gx tr.ko td{background:color-mix(in srgb,var(--bad) 12%,transparent)}
+table.gx input{width:20px;height:20px;accent-color:var(--accent)}
+kbd{font:11px ui-monospace,Menlo,monospace;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 5px;color:var(--muted)}
+.btn.pri kbd{color:#fff;border-color:rgba(255,255,255,.55);background:transparent}
+.res{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 16px}
+.muted{color:var(--muted)}.small{font-size:13.5px}
+footer{max-width:720px;margin:0 auto;padding:6px 18px 40px;color:var(--muted);font-size:13px}
+footer button{background:none;border:0;padding:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px}
+@media (max-width:520px){.q{font-size:21px}.kpi b{font-size:21px}.deck .prog{display:none}h1{font-size:22px}}
+@media (hover:none){kbd{display:none}}
+</style>
+</head>
+<body>
+<header><div class="bar">
+  <a class="brand" href="#"><i></i><span id="brand">Flashcards</span></a>
+  <span class="sp"></span>
+  <button class="ib" id="theme" title="Clair / sombre" aria-label="Changer de thème">◐</button>
+</div></header>
+<main id="view"></main>
+<footer id="foot"></footer>
+<script>
+(function(){
+'use strict';
+const CH={"id":"ses-ch03","matiere":"SES","numero":3,"titre":"Quels sont les fondements du commerce international et de l'internationalisation de la production ?","couleur":"#b8332a","plan":[{"id":"intro","court":"Intro","titre":"Introduction : Liberation Day et mercantilisme"},{"id":"I","court":"I. Pourquoi commercer ?","titre":"I. Pourquoi les pays commercent-ils entre eux ?","enfants":[{"id":"IA","court":"A. Avantages comparatifs","titre":"A. Les avantages comparatifs : fondements de la spécialisation des pays et du commerce international","enfants":[{"id":"IA1","court":"1. Productivité (Smith, Ricardo)","titre":"1. Avantages comparatifs tirés des différences de productivité (Smith et Ricardo)"},{"id":"IA2","court":"2. Dotations factorielles (HOS)","titre":"2. Avantages comparatifs tirés des différences de dotations factorielles"},{"id":"IA3","court":"3. Dotations technologiques","titre":"3. Avantages comparatifs tirés des différences de dotations technologiques"}]},{"id":"IB","court":"B. Échelle et différenciation","titre":"B. Économies d'échelle et différenciation des produits : fondements du commerce entre pays comparables"}]},{"id":"II","court":"II. Les FTN","titre":"II. Comment le développement des firmes transnationales participe-t-il au dynamisme du commerce international ?","enfants":[{"id":"IIA","court":"A. Chaînes de valeur","titre":"A. L'internationalisation de la production : fragmentation des chaînes de valeur mondiales"},{"id":"IIB","court":"B. Productivité des firmes","titre":"B. Productivité des firmes et capacité à exporter d'un pays"}]},{"id":"III","court":"III. Effets du commerce","titre":"III. Quels sont les effets induits par le commerce international ?","enfants":[{"id":"IIIA","court":"A. Effets positifs","titre":"A. Les effets positifs du libre-échange"},{"id":"IIIB","court":"B. Limites","titre":"B. Les limites du libre-échange"},{"id":"IIIC","court":"C. Protectionnisme","titre":"C. Une tentation protectionniste croissante mais comportant des limites"}]}],"cartes":[{"id":"c3-in01","s":"intro","type":"chiffre","t":"Liberation Day","q":"Qu'est-ce que le « Liberation Day » et quel est son objectif ?","r":"**2 avril 2025** : les **USA** montent leurs **droits de douane** (20-40 %) contre leurs partenaires commerciaux.\nObjectif : **protéger les entreprises à l'intérieur du pays**."},{"id":"c3-in02","s":"intro","type":"def","t":"Mercantilisme","q":"Selon le mercantilisme, qu'est-ce qui rend un pays puissant ?","r":"Une **balance commerciale positive (excédentaire)** : **exportations > importations**.\nEx : l'**Empire britannique**, l'Espagne (l'or), la France (manufactures de luxe)."},{"id":"c3-in03","s":"intro","type":"piege","t":"Mercantilisme vs Ricardo","q":"Pourquoi le mercantilisme est-il dit « guerrier » ?","r":"Le commerce y est un jeu **gagnant / perdant** : ce que l'un gagne, l'autre le perd.\nÀ l'inverse, pour **Ricardo**, le commerce est un **jeu à somme positive** : tout le monde gagne."},{"id":"syn-intro","s":"intro","type":"synthese","t":"Synthèse : pourquoi ce chapitre","q":"À l'oral, explique le point de départ du chapitre : de l'actualité au mercantilisme.","r":"① Actualité : **Liberation Day (2 avril 2025)**, les USA montent leurs droits de douane pour protéger leurs entreprises.\n② Vieille idée : le **mercantilisme** (Empire britannique). Un pays est fort s'il **exporte plus qu'il n'importe**.\n③ Commerce = **gagnant / perdant**.\n④ Question du chapitre : pourquoi les pays commercent-ils quand même ? Réponse : la **spécialisation**, où tout le monde gagne."},{"id":"c3-a101","s":"IA1","type":"auteur","t":"Smith, avantage absolu","q":"Qu'est-ce que l'avantage absolu d'Adam Smith ?","r":"**A. Smith, *La richesse des nations* (1776)**. Un pays a un avantage absolu dans un bien si ses **coûts de production y sont inférieurs à ceux des autres pays**.\nIl a donc intérêt à se **spécialiser** dans ce bien."},{"id":"c3-a102","s":"IA1","type":"meca","t":"Exemple Lyon / Roanne","q":"Lyon fait un pot à 5 €, Roanne un café à 10 €, moins cher que l'autre ville. Que font-elles ?","r":"**Lyon** a l'avantage absolu dans les **pots**, **Roanne** dans le **café**.\nChacune se **spécialise** dans son bien et **échange** l'autre : les deux **produisent plus** et s'enrichissent."},{"id":"c3-a103","s":"IA1","type":"piege","t":"La limite de Smith","q":"Quel cas l'avantage absolu de Smith n'explique-t-il pas ?","r":"Quand un pays est **plus fort dans tout**. Ex de **Ricardo** : le **Portugal** produit le **drap ET le vin** en moins d'heures que l'**Angleterre**.\nSelon Smith, l'Angleterre ne devrait rien exporter. Pourtant, ils échangent."},{"id":"c3-a104","s":"IA1","type":"chiffre","t":"Le tableau de Ricardo","q":"Combien d'heures de travail faut-il pour 1 m de drap et 1 L de vin, en Angleterre et au Portugal ?","r":"**Angleterre** : drap **100 h**, vin **120 h**.\n**Portugal** : drap **90 h**, vin **80 h**.\nLe Portugal est plus productif partout : **pas d'avantage absolu** pour l'Angleterre."},{"id":"c3-a105","s":"IA1","type":"def","t":"Coût d'opportunité","q":"Qu'est-ce que le coût d'opportunité ?","r":"La **valeur à laquelle un agent économique renonce** pour faire un choix.\nEx : pour produire **1 m de drap**, l'**Angleterre renonce à 0,83 L de vin**, le Portugal à **1,125 L**."},{"id":"c3-a106","s":"IA1","type":"meca","t":"Calculer le coût d'opportunité","q":"D'où vient le chiffre « 0,83 L de vin » pour 1 m de drap en Angleterre ?","r":"Les **100 h** du drap ne servent plus à faire du vin, qui demande **120 h** le litre.\n**100 / 120 = 0,83 L** de vin perdu. Au Portugal : **90 / 80 = 1,125 L**.\nL'Angleterre renonce à moins : le drap lui coûte **relativement moins cher**."},{"id":"c3-a107","s":"IA1","type":"def","t":"Avantage comparatif","q":"Qu'est-ce qu'un avantage comparatif (Ricardo) ?","r":"Un pays a un avantage comparatif dans le bien où il est **relativement le plus efficace**, celui où son **coût d'opportunité est le plus faible**.\nEx : l'**Angleterre dans le drap**, le **Portugal dans le vin**."},{"id":"c3-a108","s":"IA1","type":"piege","t":"Absolu vs comparatif","q":"Quelle différence entre avantage absolu et avantage comparatif ?","r":"**Absolu (Smith)** : on compare les **coûts entre pays**, bien par bien.\n**Comparatif (Ricardo)** : on compare l'**efficacité relative** d'un pays entre ses propres biens.\nUn pays **sans aucun avantage absolu** (l'Angleterre) a **toujours un avantage comparatif**."},{"id":"c3-a109","s":"IA1","type":"meca","t":"Pourquoi tout le monde gagne","q":"Pourquoi, chez Ricardo, la spécialisation enrichit-elle les deux pays ?","r":"Chaque pays produit le bien où son **coût d'opportunité est le plus faible** et **échange** le reste.\nAvec les mêmes heures, on produit **plus** au total : **gains à l'échange** pour tous.\nLe commerce international est un **jeu à somme positive**."},{"id":"c3-a111","s":"IA1","type":"piege","t":"La limite de Smith et Ricardo","q":"Quel facteur Smith et Ricardo oublient-ils ?","r":"Ils ne regardent que le **facteur travail** (des heures).\nÀ partir de **HOS**, on introduit le **capital (les machines)**."},{"id":"syn-IA1","s":"IA1","type":"synthese","t":"Synthèse : de Smith à Ricardo","q":"À l'oral, déroule tout le raisonnement de Smith à Ricardo, avec les exemples.","r":"① **Smith (1776)** : avantage **absolu**. On se spécialise là où on produit **moins cher que les autres** (ex : **Lyon pots / Roanne café**).\n② Limite : un pays plus fort **partout** ? (**Portugal** : drap 90 h, vin 80 h, contre 100 h et 120 h pour l'**Angleterre**).\n③ **Ricardo** : avantage **comparatif**. On compare le **coût d'opportunité** (drap : **0,83 L** de vin en Angleterre contre **1,125 L** au Portugal).\n④ Angleterre → **drap**, Portugal → **vin**.\n⑤ Tous gagnent : **jeu à somme positive**. Limite : seulement le **travail** → HOS ajoute le **capital**."},{"id":"c3-a201","s":"IA2","type":"auteur","t":"Le modèle HOS","q":"Que veut dire HOS et que dit ce modèle ?","r":"**E. Heckscher, B. Ohlin, P. Samuelson**.\nUn pays a un avantage comparatif selon sa **dotation factorielle** : il se spécialise dans les biens qui utilisent **intensément le facteur (capital K ou travail L) qu'il a en abondance relative**."},{"id":"c3-a202","s":"IA2","type":"def","t":"Abondance factorielle","q":"Qu'est-ce que l'abondance factorielle ?","r":"L'**offre d'un facteur de production relativement à l'offre des autres facteurs dans un même pays** (poly, doc 2).\nEx : le **pays B** (200 K, 400 L) a du **travail en abondance relative**."},{"id":"c3-a203","s":"IA2","type":"def","t":"Intensité factorielle","q":"Qu'est-ce que l'intensité factorielle ?","r":"Le **classement des biens selon le facteur qu'ils utilisent en plus grande quantité** (poly, doc 2).\nEx : **raffinage du pétrole = intensif en capital**. **Téléphone = intensif en travail** (Wuhan, Chine)."},{"id":"c3-a204","s":"IA2","type":"meca","t":"USA / Bangladesh","q":"Avec HOS, pourquoi les USA exportent-ils des voitures et le Bangladesh des vêtements ?","r":"Les **USA** sont **fortement dotés en capital** : ils se spécialisent dans la **voiture**, intensive en capital (ex : **General Motors, Detroit**).\nLe **Bangladesh** a beaucoup de **travail peu qualifié** : il fait des **vêtements**, simples et intensifs en travail."},{"id":"c3-a205","s":"IA2","type":"meca","t":"Pays A et pays B","q":"A : 1 200 K et 600 L. B : 200 K et 400 L. Coche le bon pays pour chaque ligne.","r":"Le critère : on compare **relativement**. A a 2 K pour 1 L, B a 1 K pour 2 L. Donc **B = travail relativement abondant**, **A = capital** (doc 2, question 3).","grille":{"colonnes":["Pays A","Pays B"],"lignes":[["Le plus doté en travail (en quantité)",0],["Relativement plus doté en travail qu'en capital",1],["Se spécialise dans les biens intensifs en travail",1],["Se spécialise dans les biens intensifs en capital",0]]}},{"id":"c3-a206","s":"IA2","type":"piege","t":"Quantité vs relatif","q":"Le pays A a 600 L et le pays B 400 L. Pourquoi B est-il quand même « le pays du travail » ?","r":"HOS compare l'abondance **relative**, pas la quantité.\nA a **plus** de travail, mais **encore plus de capital** (1 200). B a **relativement plus de travail que de capital** : c'est lui qui se spécialise dans le travail."},{"id":"c3-a207","s":"IA2","type":"auteur","t":"Paradoxe de Leontief","q":"Qu'est-ce que le paradoxe de Leontief ?","r":"**W. Leontief (1953)** compare le modèle HOS à la réalité.\nHOS prédit que les **USA** exportent du **capital** : c'est **faux**. Il constate l'**inverse** : ils **exportent des biens intensifs en travail** et importent du capital."},{"id":"c3-a208","s":"IA2","type":"meca","t":"La nuance de HOS","q":"Comment explique-t-on le paradoxe de Leontief ?","r":"Par le **niveau de qualification** du travail.\nLes **US** exportent des produits intensifs en **travail très qualifié** et importent du **peu qualifié**.\nEx : **Airbus (Europe) VS Boeing (USA)**."},{"id":"c3-a209","s":"IA2","type":"def","t":"Dotation initiale","q":"Qu'est-ce qui forme la dotation initiale d'un pays ?","r":"Ses **ressources** (gaz, bois) et ses **traditions**.\nEx : la **Suisse et ses montres**, la **France et le luxe**."},{"id":"c3-a210","s":"IA2","type":"meca","t":"Changer d'avantage comparatif","q":"Un pays peut-il changer d'avantage comparatif ? Comment ?","r":"Oui : HOS permet de penser une **évolution des avantages comparatifs dans le temps**.\nPar des **politiques publiques** : **R&D**, **formation de la main-d'œuvre**, hausse du **niveau de qualification**."},{"id":"c3-a211","s":"IA2","type":"meca","t":"L'exemple de la Corée","q":"Raconte l'exemple de la Corée.","r":"**« Rien → tout »**. Années 1950 : un des **pays les plus pauvres d'Asie**, du **textile** (travail peu qualifié).\n**Investissement massif en éducation (primaire)**. 1980 : électroménager (**Samsung, LG**). Aujourd'hui : leader."},{"id":"c3-a212","s":"IA2","type":"piege","t":"Corée vs Ghana","q":"Pourquoi la Corée a-t-elle réussi et pas le Ghana [?], qui investissait autant dans l'éducation ?","r":"La **Corée** a misé sur l'**éducation primaire** : alphabétisation de tous.\nLe **Ghana [?]** a misé sur le **supérieur** : inégal, ça ne fonctionne pas.\nCe n'est pas combien on investit, mais **où**."},{"id":"syn-IA2","s":"IA2","type":"synthese","t":"Synthèse : HOS","q":"À l'oral, déroule tout le raisonnement de HOS, de la dotation au paradoxe et à la Corée.","r":"① **HOS (Heckscher, Ohlin, Samuelson)** ajoute le **capital** au travail.\n② **Abondance factorielle** (ce qu'un pays a en relatif) + **intensité factorielle** (ce qu'un bien demande : **pétrole = K**, **téléphone = L**).\n③ Un pays se spécialise dans le bien qui utilise son facteur abondant : **USA → voitures**, **Bangladesh → vêtements**.\n④ **Leontief (1953)** : c'est l'**inverse** aux USA. Nuance : la **qualification** (**Airbus vs Boeing**).\n⑤ Les avantages **évoluent** par les **politiques publiques** (éducation, R&D) : la **Corée**, « rien → tout »."},{"id":"c3-a301","s":"IA3","type":"def","t":"Capital technologique","q":"Qu'est-ce que le capital technologique ? Comment l'augmenter ?","r":"Un **stock** alimenté par les **innovations**.\nOn l'augmente en **investissant dans l'éducation, les entreprises et les infrastructures** (capital public)."},{"id":"c3-a302","s":"IA3","type":"meca","t":"Le Japon et l'automobile","q":"D'où venait l'avantage comparatif du Japon dans l'automobile (1970-1980) ?","r":"Ni du climat, ni des dotations en facteurs : de **techniques de production supérieures**.\nIl produisait **plus de voitures avec la même quantité de travail et de capital** (**Krugman et Wells**, doc 3)."},{"id":"c3-a303","s":"IA3","type":"meca","t":"D'où vient l'avance technologique","q":"D'où viennent les différences de technologie entre pays ?","r":"Des **savoirs accumulés grâce à l'expérience** (ex : la **Suisse** et sa longue **tradition** des **montres**).\nOu d'**innovations** apparues dans un pays et pas dans les autres (doc 3)."},{"id":"syn-IA3","s":"IA3","type":"synthese","t":"Synthèse : la technologie","q":"À l'oral, explique comment la technologie crée un avantage comparatif.","r":"① Le **capital technologique** est un **stock nourri par l'innovation** (éducation, entreprises, infrastructures).\n② Il donne des **techniques supérieures** : plus de production avec les mêmes facteurs.\n③ Ex : le **Japon** dans l'automobile en 1970-1980 (**Krugman et Wells**).\n④ Il vient de l'**expérience** (**Suisse, montres**) ou de l'**innovation**.\n⑤ Il peut se construire : l'avantage comparatif n'est **pas figé**."}],"maj":"13/11/2026"};
+const $=(s,r=document)=>r.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const md=s=>esc(s).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\*(.+?)\*/g,'<em>$1</em>').replace(/\[\?\]/g,'<span class="unsure" title="lecture incertaine">?</span>').replace(/\n/g,'<br>');
+const h=html=>{const t=document.createElement('template');t.innerHTML=html.trim();return t.content.firstElementChild};
+const fmt=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const today=()=>fmt(new Date());
+const addDays=(iso,n)=>{const d=new Date(iso+'T00:00:00');d.setDate(d.getDate()+n);return fmt(d)};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const ls={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
+
+// ---- thème
+const root=document.documentElement;
+const applyTheme=t=>{if(t)root.setAttribute('data-theme',t);else root.removeAttribute('data-theme')};
+applyTheme(ls.get('fc:theme',null));
+$('#theme').onclick=()=>{const dark=root.getAttribute('data-theme')==='dark'||(!root.getAttribute('data-theme')&&matchMedia('(prefers-color-scheme: dark)').matches);const t=dark?'light':'dark';applyTheme(t);ls.set('fc:theme',t)};
+
+if(!CH){$('#view').innerHTML='<div class="card pad">Paquet introuvable.</div>';return}
+root.style.setProperty('--accent',CH.couleur||'#b8332a');
+document.title=CH.matiere+' · Ch. '+CH.numero+' · Flashcards';
+$('#brand').textContent=CH.matiere+' · Ch. '+CH.numero;
+
+// ---- structure
+const TYPES=Object.assign({def:'Définition',meca:'Mécanisme',chiffre:'Chiffre',auteur:'Auteur',piege:'Piège',synthese:'Synthèse orale'},CH.types||{});
+const flat=[];(function walk(ns,d,p){(ns||[]).forEach(n=>{n._d=d;n._p=p;flat.push(n);walk(n.enfants,d+1,n)})})(CH.plan,0,null);
+const node=id=>flat.find(n=>n.id===id);
+const subIds=n=>{const a=[n.id];(function w(ns){(ns||[]).forEach(c=>{a.push(c.id);w(c.enfants)})})(n.enfants);return a};
+const cardsOf=sid=>CH.cartes.filter(c=>c.s===sid);
+const card=id=>CH.cartes.find(c=>c.id===id);
+const isSynth=c=>c.type==='synthese';
+
+// ---- progression (dans ce navigateur uniquement)
+const KEY='fc:p:'+CH.id;
+let P=ls.get(KEY,{cards:{}});if(!P||typeof P!=='object'||!P.cards)P={cards:{}};
+let saved=true;
+const save=()=>{saved=ls.set(KEY,P)};
+const INTERVALS=[0,1,3,7,14,30];
+const st=id=>P.cards[id]||{box:0,due:null,seen:0,last:null};
+const isDue=id=>{const s=st(id);return !s.due||s.due<=today()};
+function grade(id,g){const s=Object.assign({},st(id));s.seen=(s.seen||0)+1;s.last=g;
+  if(g==='rate'){s.box=0;s.due=today()}else if(g==='dur'){s.box=Math.max(1,s.box||0);s.due=addDays(today(),1)}else{s.box=Math.min(5,(s.box||0)+1);s.due=addDays(today(),INTERVALS[s.box])}
+  P.cards[id]=s;save()}
+function stats(ids){const cs=CH.cartes.filter(c=>ids.includes(c.s));const m=cs.filter(c=>st(c.id).box>=2).length;
+  return{total:cs.length,due:cs.filter(c=>isDue(c.id)).length,mastered:m,seen:cs.filter(c=>st(c.id).seen>0).length,pct:cs.length?m/cs.length:0}}
+const color=s=>!s.seen?'var(--line)':s.pct>=.75?'var(--ok)':s.pct>=.4?'var(--warn)':'var(--bad)';
+
+// ---- sessions
+let S=null;
+function queue(ids,o){const q=[];flat.filter(n=>ids.includes(n.id)).forEach(n=>{let cs=cardsOf(n.id).filter(c=>!o.due||isDue(c.id));
+  const syn=cs.filter(isSynth),nor=cs.filter(c=>!isSynth(c));q.push(...(o.ordered?nor:shuffle(nor)).map(c=>c.id),...syn.map(c=>c.id))});return q}
+function start(ids,o,label){S={q:queue(ids,o||{}),i:0,flip:false,res:{rate:0,dur:0,facile:0},again:{},label:label||'',grid:{}};S.n=S.q.length;render();window.scrollTo({top:0})}
+function doGrade(g){const id=S.q[S.i];grade(id,g);S.res[g]++;if(g==='rate'&&!S.again[id]){S.again[id]=1;S.q.push(id)}S.i++;S.flip=false;S.grid={};render()}
+document.addEventListener('keydown',e=>{if(!S||S.i>=S.q.length||e.metaKey||e.ctrlKey||e.altKey)return;
+  if(e.key===' '){e.preventDefault();S.flip=!S.flip;render()}else if(S.flip&&['1','2','3'].includes(e.key)){e.preventDefault();doGrade(['rate','dur','facile'][+e.key-1])}});
+
+// ---- tableau à cocher
+function grille(c,etat,corr){const g=c.grille,box=h('<div class="gwrap"><table class="gx"><thead><tr><th></th>'+g.colonnes.map(x=>'<th>'+esc(x)+'</th>').join('')+'</tr></thead><tbody></tbody></table></div>');
+  const tb=$('tbody',box);let bons=0;
+  g.lignes.forEach((ln,i)=>{const[lab,bonne]=ln,ch=etat[i],ok=ch===bonne;if(ok)bons++;
+    const tr=h('<tr class="'+(corr?(ok?'ok':'ko'):'')+'"><td>'+esc(lab)+'</td>'+g.colonnes.map(()=>'<td class="c"></td>').join('')+'</tr>');
+    g.colonnes.forEach((x,j)=>{const td=tr.children[j+1];
+      if(corr){if(j===bonne)td.innerHTML='<b style="color:var(--ok)">✓</b>';else if(j===ch)td.innerHTML='<b style="color:var(--bad)">✗</b>'}
+      else{const inp=h('<input type="radio" name="g'+i+'" '+(ch===j?'checked':'')+'>');inp.setAttribute('aria-label',lab+' : '+x);inp.onchange=()=>{etat[i]=j};td.appendChild(inp)}});
+    tb.appendChild(tr)});
+  if(corr)box.appendChild(h('<p class="small" style="font-weight:700;margin:8px 0 0">'+bons+' / '+g.lignes.length+' bien classés</p>'));
+  return box}
+
+// ---- vues
+function home(){const all=flat.map(n=>n.id),g=stats(all),w=h('<div></div>');
+  w.appendChild(h('<div><h1>'+esc(CH.titre)+'</h1><p class="sub">'+esc(CH.matiere)+' · Chapitre '+esc(CH.numero)+' · '+g.total+' cartes</p></div>'));
+  w.appendChild(h('<div class="kpis"><div class="card kpi"><b>'+g.due+'</b><span>à revoir aujourd’hui</span></div><div class="card kpi"><b>'+Math.round(g.pct*100)+' %</b><span>maîtrisé</span></div><div class="card kpi"><b>'+g.seen+'</b><span>cartes déjà vues</span></div></div>'));
+  const b=h('<div class="stack"></div>');
+  const b1=h('<button class="btn pri wide">Réviser maintenant ('+g.due+')</button>');b1.disabled=!g.due;b1.onclick=()=>{const order=flat.slice().sort((a,b)=>stats([a.id]).pct-stats([b.id]).pct).map(n=>n.id);start(order,{due:true},'À revoir aujourd’hui')};
+  const b2=h('<button class="btn wide">Tout le chapitre, dans l’ordre ('+g.total+')</button>');b2.onclick=()=>start(all,{ordered:true},'Tout le chapitre');
+  b.appendChild(b1);b.appendChild(b2);w.appendChild(b);
+  if(!g.due&&g.total)w.appendChild(h('<p class="small muted" style="margin:10px 0 0">Rien à revoir aujourd’hui. Les cartes reviendront à leur date.</p>'));
+  w.appendChild(h('<h2>Les paquets</h2>'));w.appendChild(deckList(CH.plan,0));
+  w.appendChild(h('<h2>Comment ça marche</h2>'));
+  w.appendChild(h('<ul class="how"><li>Lis la question. <b>Réponds à voix haute avant</b> de retourner la carte.</li><li>Note-toi honnêtement : <b>Raté</b> revient tout de suite, <b>Dur</b> demain, <b>Facile</b> dans 1, 3, 7, 14 puis 30 jours.</li><li>Reviens chaque jour sur « Réviser maintenant » : quelques minutes suffisent.</li></ul>'));
+  return w}
+function deckList(nodes,depth){const box=h('<div class="card" style="overflow:hidden"></div>');
+  (function walk(ns,d){ns.forEach(n=>{const s=stats(subIds(n));if(!s.total)return;
+    const own=cardsOf(n.id).length,kids=(n.enfants||[]).some(c=>stats(subIds(c)).total);
+    if(kids&&!own&&d===0){box.appendChild(h('<a class="deck grp" href="#'+encodeURIComponent(n.id)+'">'+esc(n.court||n.titre)+'</a>'))}
+    else{box.appendChild(h('<a class="deck'+(d>0?' sub1':'')+'" href="#'+encodeURIComponent(n.id)+'"><div class="t"><b>'+esc(n.court||n.titre)+'</b><small>'+s.total+' carte'+(s.total>1?'s':'')+(s.due?' · '+s.due+' à revoir':'')+'</small></div><div class="prog"><i style="width:'+(s.pct*100)+'%;background:'+color(s)+'"></i></div><span class="go">›</span></a>'))}
+    if(n.enfants)walk(n.enfants,d+1)})})(nodes,depth);
+  return box}
+function deckView(n){const ids=subIds(n),s=stats(ids),w=h('<div></div>');
+  const chain=[];let p=n._p;while(p){chain.unshift(p.court||p.titre);p=p._p}
+  w.appendChild(h('<p class="small muted" style="margin:0 0 6px"><a href="#">'+esc(CH.matiere)+' · Ch. '+esc(CH.numero)+'</a>'+chain.map(x=>' › '+esc(x)).join('')+'</p>'));
+  w.appendChild(h('<div><h1>'+esc(n.titre||n.court)+'</h1><p class="sub">'+s.total+' cartes · '+s.due+' à revoir · '+Math.round(s.pct*100)+' % maîtrisé</p></div>'));
+  const b=h('<div class="stack"></div>');
+  const b1=h('<button class="btn pri wide">Réviser ce paquet ('+s.due+')</button>');b1.disabled=!s.due;b1.onclick=()=>start(ids,{due:true},n.court||n.titre);
+  const b2=h('<button class="btn wide">Tout le paquet ('+s.total+')</button>');b2.disabled=!s.total;b2.onclick=()=>start(ids,{},n.court||n.titre);
+  const b3=h('<button class="btn sm" style="margin-top:14px">Copier le lien de ce paquet</button>');
+  b3.onclick=()=>{const u=location.href;const done=()=>{b3.textContent='Lien copié ✓';setTimeout(()=>b3.textContent='Copier le lien de ce paquet',1800)};
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(u).then(done,()=>prompt('Copie ce lien :',u));else prompt('Copie ce lien :',u)};
+  b.appendChild(b1);b.appendChild(b2);b.appendChild(b3);w.appendChild(b);
+  if((n.enfants||[]).some(c=>stats(subIds(c)).total)){w.appendChild(h('<h2>Dans ce paquet</h2>'));w.appendChild(deckList(n.enfants,1))}
+  return w}
+function session(){const w=h('<div></div>');
+  if(S.i>=S.q.length){const r=S.res;
+    w.appendChild(h('<div><h1>Session terminée</h1><p class="sub">'+S.n+' carte'+(S.n>1?'s':'')+(S.label?' · '+esc(S.label):'')+'</p></div>'));
+    w.appendChild(h('<div class="res"><span class="chip piege">Raté '+r.rate+'</span><span class="chip">Dur '+r.dur+'</span><span class="chip" style="color:var(--ok)">Facile '+r.facile+'</span></div>'));
+    if(!S.n)w.appendChild(h('<p class="muted">Rien à revoir dans ce paquet aujourd’hui.</p>'));
+    const b=h('<button class="btn pri wide">Retour</button>');b.onclick=()=>{S=null;render();window.scrollTo({top:0})};w.appendChild(b);return w}
+  const c=card(S.q[S.i]);if(!c){S.q.splice(S.i,1);return session()}
+  const n=node(c.s),syn=isSynth(c);
+  const top=h('<div class="top"><span>'+(S.i+1)+' / '+S.q.length+'</span><span class="sp"></span><button class="btn sm">Arrêter</button></div>');
+  top.querySelector('button').onclick=()=>{S.i=S.q.length;render()};w.appendChild(top);
+  w.appendChild(h('<div class="prog" style="margin-bottom:12px"><i style="width:'+(S.i/S.q.length*100)+'%;background:var(--accent)"></i></div>'));
+  const f=h('<div class="card flash'+(syn?' synth':'')+'"><div class="chips"><span class="chip '+esc(c.type)+'">'+esc(TYPES[c.type]||c.type)+'</span><span class="chip">'+esc(n?(n.court||n.titre):'')+'</span></div><div class="q">'+md(c.q)+'</div></div>');
+  if(syn&&!S.flip)f.appendChild(h('<div class="hint">À voix haute, sans support : tout le raisonnement de la partie, avec les exemples. Retourne seulement quand tu as fini.</div>'));
+  if(c.grille)f.appendChild(grille(c,S.grid,S.flip));
+  if(S.flip)f.appendChild(h('<div class="r">'+md(c.r)+'</div>'));
+  if(!S.flip){const b=h('<button class="btn pri wide">'+(c.grille?'Vérifier':'Voir la réponse')+' <kbd>espace</kbd></button>');b.onclick=()=>{S.flip=true;render()};f.appendChild(b)}
+  else{const x=st(c.id),nx=INTERVALS[Math.min(5,(x.box||0)+1)];
+    const g=h('<div class="grade"><button class="g1">Raté<small>tout de suite</small></button><button class="g2">Dur<small>demain</small></button><button class="g3">Facile<small>dans '+nx+' j</small></button></div>');
+    [...g.children].forEach((b,i)=>b.onclick=()=>doGrade(['rate','dur','facile'][i]));f.appendChild(g)}
+  w.appendChild(f);
+  if(!saved)w.appendChild(h('<p class="small" style="color:var(--bad);margin-top:12px">Ton navigateur bloque l’enregistrement (navigation privée ?). Tu peux réviser, mais ta progression ne sera pas gardée.</p>'));
+  return w}
+function render(){const v=$('#view');v.innerHTML='';
+  if(S){v.appendChild(session());return}
+  const id=decodeURIComponent(location.hash.slice(1)),n=id&&node(id);
+  v.appendChild(n?deckView(n):home())}
+window.addEventListener('hashchange',()=>{S=null;render();window.scrollTo({top:0})});
+const ft=$('#foot');
+ft.appendChild(h('<p>Ta progression est enregistrée <b>dans ce navigateur, sur cet appareil</b>. Personne d’autre ne la voit. Les cartes ne peuvent pas être modifiées ici.</p>'));
+const rz=h('<p><button>Remettre ma progression à zéro</button>'+(CH.maj?' · Cartes mises à jour le '+esc(CH.maj):'')+'</p>');
+rz.querySelector('button').onclick=()=>{if(confirm('Effacer ta progression sur ce chapitre ?')){P={cards:{}};ls.del(KEY);S=null;render()}};
+ft.appendChild(rz);
+render();
+})();
+</script>
+</body>
+</html>
